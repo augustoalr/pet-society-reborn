@@ -1,4 +1,2 @@
-export interface IStorageService {
-  getItem<T>(key: string): Promise<T | null>;
-  setItem<T>(key: string, value: T): Promise<void>;
-}
+export type { IStorageService } from './storage';
+export { LocalStorageAdapter, GameStateRepository, GAME_STATE_KEY } from './storage';
