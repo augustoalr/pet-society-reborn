@@ -58,6 +58,16 @@ Leyenda de etiquetas:
   3. Enlaces a la documentación interna (`docs/ARQUITECTURA.md`, `docs/TAREAS.md`, `docs/REGLAS.md`) [CUMPLIDO].
   4. Pasa `npm run verify` limpiamente [CUMPLIDO].
 
+#### T-README-FIX: Adecuación Comercial, Derechos de Autor y Enfoque de Exhibición de README.md
+- **Dependencias:** T-04B
+- **Objetivo:** Ajustar el `README.md` según la directriz comercial de Augusto (dueño del producto): eliminar licencia MIT e insignia de MIT, establecer copyright reservado a nombre de Augusto, retirar guía de clonado/instalación (git clone/npm install) reemplazándola por estado del proyecto y anuncio de demo web, y destacar a Augusto como creador y arquitecto del producto.
+- **Criterios de Aceptación:**
+  1. Insignia y mención de licencia MIT eliminadas completamente.
+  2. Declaración explícita: "Propiedad Intelectual © 2026 Augusto. Todos los derechos reservados. Proyecto de portafolio y exhibición comercial; prohibida su copia o redistribución no autorizada."
+  3. Sección de clonado e instalación eliminada y reemplazada por "Estado del Proyecto y Demo Web" (versión jugable disponible próximamente en web).
+  4. Augusto destacado explícitamente como creador, director y arquitecto de sistemas del producto.
+  5. `npm run verify` pasa sin errores.
+
 #### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad)
 - **Dependencias:** T-02, T-04
 - **Objetivo:** Implementar el bucle de tiempo para decrecimiento de necesidades y las acciones de cuidado: alimentar con comida, bañar con esponja/jabón y acariciar.
