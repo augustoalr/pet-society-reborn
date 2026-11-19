@@ -1,4 +1,6 @@
-export interface PetEntity {
-  id: string;
-  name: string;
-}
+export type { Pet, PetNeeds, PetAppearance, PetColor, EyeStyle, MouthStyle, EarStyle } from './pet';
+export type { Wallet } from './economy';
+export type { InventoryItem, Inventory, ItemCategory } from './inventory';
+export type { Room, PlacedItem } from './room';
+export type { GameState } from './game';
+export { createDefaultGameState } from './game';
