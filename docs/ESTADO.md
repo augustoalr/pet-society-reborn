@@ -13,7 +13,7 @@
 | T-04B README comercial | T-04B readme | t-04b-readme | Local | #11 | Hecho | 2026-11-19 | 2026-11-19 (095f9c7) | Presentación comercial, features y guía del proyecto |
 | T-README-FIX Ajuste comercial README | T-README-FIX | t-readme-fix | Local | #14 | Hecho | 2026-11-19 | 2026-11-19 (b7e4d5c) | Derechos © Augusto, demo web y exhibición LinkedIn |
 | T-05 Necesidades y Cuidados | T-05 necesidades-cuidados | t-05-necesidades-cuidados | Local | #17 | Hecho | 2026-11-19 | 2026-11-19 (9d969cb) | Decremento temporal offline/online, HUD y acciones de cuidado |
-| T-06 Economía y Billetera | - | - | - | - | Pendiente | - | - | [DELICADA] |
+| T-06 Economía y Billetera | T-06 economia | t-06-economia | Local | - | En curso | 2026-11-19 | - | [DELICADA] Billetera dual coins/cash, compras atómicas y transacciones |
 
 ## Conversaciones activas
 - Manager (fija)
