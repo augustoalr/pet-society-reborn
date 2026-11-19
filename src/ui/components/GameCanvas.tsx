@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import type { PetAppearance, PetClothes } from '../../domain';
 import { PixiGameEngine } from '../../game';
 import { theme } from '../../styles';
 
@@ -10,6 +11,11 @@ import { theme } from '../../styles';
  * - `error`: La inicialización falló (p.ej. WebGL no soportado).
  */
 type EngineStatus = 'loading' | 'ready' | 'error';
+
+export interface GameCanvasProps {
+  readonly appearance?: PetAppearance;
+  readonly clothes?: PetClothes | readonly string[];
+}
 
 /**
  * Componente React que monta el lienzo de PixiJS dentro de un contenedor
@@ -25,7 +31,7 @@ type EngineStatus = 'loading' | 'ready' | 'error';
  * La UI es "tonta": no contiene lógica de juego, solo monta y conecta
  * el motor gráfico con el DOM (R-01: SoC).
  */
-export const GameCanvas: React.FC = () => {
+export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<PixiGameEngine | null>(null);
   const [status, setStatus] = useState<EngineStatus>('loading');
@@ -77,6 +83,13 @@ export const GameCanvas: React.FC = () => {
       engineRef.current = null;
     };
   }, []);
+
+  // Sincronización reactiva de apariencia y ropa con el motor
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current && appearance) {
+      engineRef.current.updatePetAppearance(appearance, clothes);
+    }
+  }, [appearance, clothes, status]);
 
   return (
     <div

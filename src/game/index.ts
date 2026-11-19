@@ -8,3 +8,18 @@ export {
   calculateViewportScale,
 } from './viewport';
 export type { ViewportScaleResult } from './viewport';
+
+export {
+  PetView,
+  PET_COLOR_PALETTES,
+  FACIAL_FEATURE_COLORS,
+  getPetColorPalette,
+  PET_LAYER_ORDER,
+  PET_LAYER_NAMES,
+} from './pet';
+export type {
+  PetLayerOrderKey,
+  PetLayerIndex,
+  PetColorPalette,
+  FacialFeatureColors,
+} from './pet';

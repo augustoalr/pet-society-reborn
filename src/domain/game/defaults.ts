@@ -18,6 +18,11 @@ export function createDefaultGameState(): GameState {
         mouth: 'smile',
         ears: 'floppy',
       },
+      clothes: {
+        hat: null,
+        shirt: null,
+        accessory: null,
+      },
       needs: {
         hunger: 80,
         hygiene: 80,
