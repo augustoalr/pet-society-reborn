@@ -44,3 +44,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Comunicación de producto (Product-Led Documentation) y separación de capas de lectura.
 - **Por qué se hizo así:** El repositorio necesita una puerta de entrada comercial que seduzca al jugador y al desarrollador sin obligarlo a bucear en los diagramas técnicos de `docs/`.
 - **Qué aprendí:** Un buen README balancea la propuesta de valor del juego con las garantías de ingeniería (badges de CI, Clean Architecture y guía de comandos unificada `verify`), generando confianza inmediata.
+
+---
+
+### T-README-FIX: Adecuación Comercial, Derechos de Autor y Enfoque de Exhibición
+- **Concepto clave:** Protección de propiedad intelectual y posicionamiento de portafolio profesional en repositorios públicos.
+- **Por qué se hizo así:** Un proyecto de autoría propia para exhibición profesional y reclutamiento en LinkedIn debe declarar claramente sus derechos de autor sin licencias permisivas que autoricen la explotación por terceros, sustituyendo guías de instalación por anuncios de demo web.
+- **Qué aprendí:** En proyectos de exhibición, el README es el escaparate del arquitecto y creador: debe invitar a probar la demo web y a contactar por LinkedIn, no a clonar el código fuente.
