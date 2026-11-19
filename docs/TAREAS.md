@@ -48,6 +48,15 @@ Leyenda de etiquetas:
   1. La mascota se visualiza correctamente según su configuración en el estado [CUMPLIDO].
   2. Capacidad de alternar colores y equipar/desequipar ropa visualmente en tiempo real [CUMPLIDO].
 
+#### T-04B: README Comercial y Documento de Presentación del Proyecto
+- **Dependencias:** T-01
+- **Objetivo:** Crear el archivo `README.md` en la raíz del repositorio con enfoque comercial, atractivo y técnico para presentar Pet Society (Reborn), sus características destacadas, arquitectura, stack tecnológico y guía de inicio rápido.
+- **Criterios de Aceptación:**
+  1. `README.md` creado con propuesta de valor, capturas/diagrama conceptual, tabla de características (personalización, cuidados, minijuegos, economía).
+  2. Documentación de comandos de desarrollo y verificación (`npm run dev`, `npm run verify`, `npm run build`).
+  3. Enlaces a la documentación interna (`docs/ARQUITECTURA.md`, `docs/TAREAS.md`, `docs/REGLAS.md`).
+  4. Pasa `npm run verify` limpiamente.
+
 #### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad)
 - **Dependencias:** T-02, T-04
 - **Objetivo:** Implementar el bucle de tiempo para decrecimiento de necesidades y las acciones de cuidado: alimentar con comida, bañar con esponja/jabón y acariciar.
