@@ -30,3 +30,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Desacoplamiento de renderizado WebGL/Canvas de React y lógica de escalado con resolución virtual fija.
 - **Por qué se hizo así:** Separar las matemáticas de relación de aspecto (`calculateViewportScale`) en funciones puras permite testear el soporte para móviles, tablets y monitores ultra-panorámicos en Node sin necesidad de renderizar WebGL.
 - **Qué aprendí:** En motores 2D, definir un lienzo virtual inmutable (800x600) y escalar mediante letterbox/pillarbox preserva la proporción del juego sin distorsionar gráficos ni requerir recalcular posiciones relativas en cada sprite.
+
+---
+
+### T-04: Sistema de Renderizado de Mascota por Capas
+- **Concepto clave:** Renderizado procedimental modular por capas (Layer Pattern) y reactividad gráfica desacoplada.
+- **Por qué se hizo así:** Separar la mascota en capas independientes (orejas, cuerpo, cabeza, ojos, boca, ropa) y recolorear/redibujar cada capa de forma atómica evita regenerar todo el árbol de nodos de PixiJS, asegurando 60 FPS estables al cambiar de ropa o color.
+- **Qué aprendí:** Dibujar elementos visuales vectorialmente con `Graphics` de PixiJS permite una resolución infinita y nítida en pantallas Retina/móviles sin la sobrecarga de descargar decenas de imágenes PNG en el MVP.

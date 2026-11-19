@@ -40,12 +40,13 @@ Leyenda de etiquetas:
   1. El lienzo de juego mantiene su proporción visual sin deformarse en redimensionamiento de ventana y dispositivos móviles táctiles [CUMPLIDO].
   2. Soporte para eventos de puntero (clic y toque táctil unificados) [CUMPLIDO].
 
-#### T-04: Sistema de Renderizado de Mascota por Capas
+#### T-04: Sistema de Renderizado de Mascota por Capas [COMPLETADA]
 - **Dependencias:** T-02, T-03
+- **Merge:** Commit `f01b554` en `main` (PR #8).
 - **Objetivo:** Crear el renderizador de la mascota modular (cuerpo base, color, ojos, orejas, boca y capas de ropa).
 - **Criterios de Aceptación:**
-  1. La mascota se visualiza correctamente según su configuración en el estado.
-  2. Capacidad de alternar colores y equipar/desequipar ropa visualmente en tiempo real.
+  1. La mascota se visualiza correctamente según su configuración en el estado [CUMPLIDO].
+  2. Capacidad de alternar colores y equipar/desequipar ropa visualmente en tiempo real [CUMPLIDO].
 
 #### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad)
 - **Dependencias:** T-02, T-04
