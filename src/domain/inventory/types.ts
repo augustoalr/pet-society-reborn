@@ -11,6 +11,8 @@ export interface InventoryItem {
   readonly name: string;
   readonly category: ItemCategory;
   readonly quantity: number;
+  /** Valor nutricional o de saciedad para ítems de categoría 'food'. */
+  readonly nutrition?: number;
 }
 
 /** Inventario completo del jugador: lista de ítems con cantidades. */
