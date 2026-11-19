@@ -10,3 +10,21 @@ export type {
   ClothingItemId,
   PetClothes,
 } from './types';
+
+export {
+  HUNGER_DECAY_RATE,
+  HYGIENE_DECAY_RATE,
+  ENERGY_DECAY_RATE,
+  HAPPINESS_DECAY_RATE,
+  HAPPINESS_CRITICAL_DECAY_MULTIPLIER,
+  CRITICAL_NEED_THRESHOLD,
+  DEFAULT_FOOD_NUTRITION,
+  DEFAULT_CLEAN_EFFICIENCY,
+  DEFAULT_CLEAN_HAPPINESS_BOOST,
+  DEFAULT_PET_HAPPINESS_BOOST,
+  clampNeed,
+  calculateNeedsDecay,
+  feedPet,
+  cleanPet,
+  petAnimal,
+} from './needsLogic';

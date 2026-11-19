@@ -20,6 +20,7 @@ export class PixiGameEngine {
   private container: HTMLElement | null = null;
   private petView: PetView | null = null;
   private currentScale = 1;
+  private petClickHandler: (() => void) | null = null;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
 
   /** Indica si el motor está inicializado y listo para renderizar. */
@@ -45,6 +46,13 @@ export class PixiGameEngine {
   /** Referencia a la vista de la mascota renderizada en el escenario virtual. */
   get pet(): PetView | null {
     return this.petView;
+  }
+
+  /**
+   * Configura el callback al hacer clic o tocar sobre la mascota.
+   */
+  setPetClickHandler(handler: (() => void) | null): void {
+    this.petClickHandler = handler;
   }
 
   /**
@@ -115,6 +123,12 @@ export class PixiGameEngine {
 
     this.petView = new PetView(appearance, clothes);
     this.petView.setPosition(position.x, position.y);
+    this.petView.eventMode = 'static';
+    this.petView.cursor = 'pointer';
+    this.petView.on('pointerdown', (event) => {
+      event.stopPropagation();
+      this.petClickHandler?.();
+    });
     this.petView.startIdleAnimation();
     this.app.stage.addChild(this.petView);
     return this.petView;
@@ -188,6 +202,7 @@ export class PixiGameEngine {
     }
 
     this.pointerHandlers.clear();
+    this.petClickHandler = null;
 
     this.app.destroy(true, { children: true });
     this.app = null;

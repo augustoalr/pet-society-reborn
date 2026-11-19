@@ -36,7 +36,22 @@ export function createDefaultGameState(): GameState {
       cash: 0,
     },
     inventory: {
-      items: [],
+      items: [
+        {
+          id: 'food-apple',
+          name: 'Manzana fresca',
+          category: 'food',
+          quantity: 3,
+          nutrition: 20,
+        },
+        {
+          id: 'food-bread',
+          name: 'Panecillo tierno',
+          category: 'food',
+          quantity: 2,
+          nutrition: 35,
+        },
+      ],
     },
     room: {
       id: 'default-room',

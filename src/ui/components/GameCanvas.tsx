@@ -15,6 +15,8 @@ type EngineStatus = 'loading' | 'ready' | 'error';
 export interface GameCanvasProps {
   readonly appearance?: PetAppearance;
   readonly clothes?: PetClothes | readonly string[];
+  /** Callback al hacer clic o tocar sobre la mascota (para acariciarla). */
+  readonly onPetClick?: () => void;
 }
 
 /**
@@ -31,7 +33,7 @@ export interface GameCanvasProps {
  * La UI es "tonta": no contiene lógica de juego, solo monta y conecta
  * el motor gráfico con el DOM (R-01: SoC).
  */
-export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes }) => {
+export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes, onPetClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<PixiGameEngine | null>(null);
   const [status, setStatus] = useState<EngineStatus>('loading');
@@ -90,6 +92,13 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes }) =
       engineRef.current.updatePetAppearance(appearance, clothes);
     }
   }, [appearance, clothes, status]);
+
+  // Sincronización del handler de interacción directa con la mascota
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.setPetClickHandler(onPetClick ?? null);
+    }
+  }, [onPetClick, status]);
 
   return (
     <div
