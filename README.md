@@ -1,21 +1,23 @@
 # 🐾 Pet Society (Reborn)
 
+[![Author: Augusto](https://img.shields.io/badge/Author-Augusto-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/)
+[![Status: In_Development](https://img.shields.io/badge/Status-In_Development-orange)](#)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PixiJS v8](https://img.shields.io/badge/PixiJS-v8-E72264?logo=pixijs&logoColor=white)](https://pixijs.com/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen?logo=github-actions&logoColor=white)](https://github.com/augustoalr/pet-society-reborn/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> Reviviendo la magia nostálgica de cuidar, vestir, consentir y decorar el mundo de tu mascota virtual, construida con la potencia y fluidez de la web moderna.
+> Reviviendo la magia nostálgica de cuidar, vestir, consentir y decorar el mundo de tu mascota virtual, construida con la potencia y fluidez de la web moderna.  
+> **Concebido, dirigido y diseñado arquitectónicamente por Augusto.**
 
 ---
 
 ## 🌟 Visión del Proyecto
 
-**Pet Society (Reborn)** nace para reimaginar la experiencia dorada de las mascotas virtuales de la era clásica en navegadores. Con una arquitectura web moderna, ligera y de alto rendimiento, el juego combina interactividad táctil, gráficos vectoriales dinámicos y un diseño de sistemas limpio y extensible.
+**Pet Society (Reborn)** es un proyecto conceptual y de ingeniería de software de alto nivel concebido, liderado y arquitecturado por **Augusto** (Creador, Director de Producto y Arquitecto de Sistemas). Nace para reimaginar la experiencia dorada de las mascotas virtuales de la era clásica en navegadores web.
 
-Ya no dependes de plugins obsoletos: tu mascota vive directamente en el navegador, funcionando de manera ágil tanto en ordenadores de sobremesa como en tablets y móviles.
+Con una arquitectura web moderna, ligera y de alto rendimiento, el juego combina interactividad táctil, gráficos vectoriales dinámicos y un diseño de sistemas limpio y extensible. Ya no dependes de plugins obsoletos: tu mascota vive directamente en el navegador, funcionando de manera ágil tanto en ordenadores de sobremesa como en tablets y dispositivos móviles.
 
 ---
 
@@ -44,30 +46,12 @@ Pet Society (Reborn) sigue principios rigurosos de **Clean Architecture** y **Se
 
 ---
 
-## 🚀 Inicio Rápido y Desarrollo
+## 🚀 Estado del Proyecto y Demo Web
 
-### Requisitos Previos
-- **Node.js**: Versión `20.x` o superior recomendada.
-- **npm**: Gestor de paquetes oficial de Node.
+El juego se encuentra en **fase activa de desarrollo e ingeniería de pre-lanzamiento**, consolidando sus hitos de diseño de sistemas, renderizado vectorial y dinámicas de interacción.
 
-### Instalación
-
-```bash
-git clone https://github.com/augustoalr/pet-society-reborn.git
-cd pet-society-reborn
-npm install
-```
-
-### Comandos Principales
-
-| Comando | Acción |
-| :--- | :--- |
-| `npm run dev` | Inicia el servidor de desarrollo local con Vite (HMR ultra rápido). |
-| `npm run verify` | **Pipeline de verificación unificado:** Ejecuta linter, chequeo estricto de tipos de TypeScript (`tsc --noEmit`), suite de tests (`vitest`) y compilación de producción. |
-| `npm run build` | Genera los bundles optimizados listos para producción en `/dist`. |
-| `npm run preview` | Previsualiza localmente el build de producción generado. |
-| `npm run test` | Ejecuta la suite de pruebas unitarias y de integración con Vitest. |
-| `npm run lint` | Analiza el código fuente con ESLint. |
+- 🌐 **Demo Jugable en la Web:** La versión jugable estará disponible próximamente en web para acceso público directo desde cualquier navegador moderno (escritorio y móvil), sin requerir descargas ni instalaciones.
+- 🤝 **Contacto Profesional y Avances:** Te invitamos a seguir los avances del proyecto, explorar oportunidades o conectar profesionalmente con [Augusto en LinkedIn](https://www.linkedin.com/).
 
 ---
 
@@ -86,8 +70,8 @@ Toda la evolución y reglas del proyecto se documentan de forma transparente y e
 
 ---
 
-## 📄 Licencia y Créditos
+## 📄 Propiedad Intelectual y Créditos
 
-Este proyecto se distribuye bajo la licencia **MIT** (o ISC según configuración de paquete base). Consulta el archivo de licencia para más detalles.
-
-*Inspirado con cariño en el clásico Pet Society (originalmente desarrollado por Playfish/EA). Pet Society (Reborn) es una recreación y homenaje independiente impulsado por la comunidad con fines educativos y de preservación lúdica.*
+> **Propiedad Intelectual © 2026 Augusto. Todos los derechos reservados.**  
+> *Proyecto de portafolio y exhibición comercial; prohibida su copia, bifurcación o redistribución no autorizada.*  
+> *Inspirado en el clásico Pet Society (Playfish/EA). Pet Society (Reborn) es una reinterpretación de ingeniería independiente orientada a la preservación lúdica y demostración de arquitectura web moderna.*
