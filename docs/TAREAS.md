@@ -19,13 +19,14 @@ Leyenda de etiquetas:
   2. `npm run verify` ejecuta verificación de tipos (`tsc --noEmit`), linter y suite de tests básica sin errores [CUMPLIDO].
   3. Estructura de carpetas según `docs/ARQUITECTURA.md` creada [CUMPLIDO].
 
-#### T-02: [DELICADA] Capa de Persistencia Agnóstica y Modelos de Dominio
+#### T-02: [DELICADA] Capa de Persistencia Agnóstica y Modelos de Dominio [COMPLETADA]
 - **Dependencias:** T-01
+- **Merge:** Commit `c34665b` en `main` (PR #4).
 - **Objetivo:** Definir las interfaces de dominio (`Pet`, `Wallet`, `InventoryItem`, `Room`) y la interfaz `IStorageService` con su implementación inicial `LocalStorageAdapter`.
 - **Criterios de Aceptación:**
-  1. Modelos de dominio tipados estrictamente en TypeScript con inmutabilidad.
-  2. Implementación de `LocalStorageAdapter` con pruebas unitarias que verifiquen guardar, leer y resetear el estado del juego.
-  3. Mecanismo de fallback: si no hay datos guardados, inicializa un estado por defecto válido.
+  1. Modelos de dominio tipados estrictamente en TypeScript con inmutabilidad [CUMPLIDO].
+  2. Implementación de `LocalStorageAdapter` con pruebas unitarias que verifiquen guardar, leer y resetear el estado del juego [CUMPLIDO].
+  3. Mecanismo de fallback: si no hay datos guardados, inicializa un estado por defecto válido [CUMPLIDO].
 
 ---
 
