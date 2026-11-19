@@ -51,3 +51,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Protección de propiedad intelectual y posicionamiento de portafolio profesional en repositorios públicos.
 - **Por qué se hizo así:** Un proyecto de autoría propia para exhibición profesional y reclutamiento en LinkedIn debe declarar claramente sus derechos de autor sin licencias permisivas que autoricen la explotación por terceros, sustituyendo guías de instalación por anuncios de demo web.
 - **Qué aprendí:** En proyectos de exhibición, el README es el escaparate del arquitecto y creador: debe invitar a probar la demo web y a contactar por LinkedIn, no a clonar el código fuente.
+
+---
+
+### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad)
+- **Concepto clave:** Simulación temporal offline/online mediante funciones deterministas y desacoplamiento de ciclo de vida.
+- **Por qué se hizo así:** Almacenar `lastSavedTimestamp` permite calcular el decaimiento de necesidades acumulado en el momento exacto en que el usuario recarga la app (`elapsedSeconds`), sin requerir procesos en segundo plano costosos o servidores activos.
+- **Qué aprendí:** Las acciones sobre necesidades (`feedPet`, `cleanPet`, `petAnimal`) deben tratarse como transacciones atómicas inmutables con validación de rango cerrado `[0, 100]`, asegurando que la interfaz de usuario nunca reciba estados inconsistentes.

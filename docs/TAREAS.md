@@ -69,13 +69,14 @@ Leyenda de etiquetas:
   4. Augusto destacado explícitamente como creador, director y arquitecto de sistemas del producto [CUMPLIDO].
   5. `npm run verify` pasa sin errores [CUMPLIDO].
 
-#### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad)
+#### T-05: Lógica de Necesidades y Cuidados (Hambre, Higiene, Felicidad) [COMPLETADA]
 - **Dependencias:** T-02, T-04
+- **Merge:** Commit `9d969cb` en `main` (PR #17).
 - **Objetivo:** Implementar el bucle de tiempo para decrecimiento de necesidades y las acciones de cuidado: alimentar con comida, bañar con esponja/jabón y acariciar.
 - **Criterios de Aceptación:**
-  1. Las barras de necesidades se actualizan según las fórmulas del dominio.
-  2. Interactuar con jabón limpia a la mascota; darle comida sacia el hambre y resta el ítem del inventario.
-  3. Los cambios persisten a través de `IStorageService`.
+  1. Las barras de necesidades se actualizan según las fórmulas del dominio [CUMPLIDO].
+  2. Interactuar con jabón limpia a la mascota; darle comida sacia el hambre y resta el ítem del inventario [CUMPLIDO].
+  3. Los cambios persisten a través de `IStorageService` [CUMPLIDO].
 
 ---
 
