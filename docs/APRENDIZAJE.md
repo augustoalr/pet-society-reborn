@@ -12,7 +12,7 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 
 ---
 
-### T-00: Inicialización del Proyecto y Arquitectura Base
-- **Concepto clave:** Desacoplamiento estructural, CI con check único y preparación del entorno.
-- **Por qué se hizo así:** Iniciar un proyecto con reglas claras de aislamiento de capas (SoC) evita tener que refactorizar cuando el juego crezca en complejidad o cuando pasemos de LocalStorage a base de datos en la nube.
-- **Qué aprendí:** Antes de escribir una sola línea de lógica visual o de juego, definir las interfaces de datos y los contratos permite que frontend, backend y persistencia evolucionen sin romperse entre sí.
+### T-01: Configuración del Proyecto y Entorno de Verificación
+- **Concepto clave:** Verificación multi-entorno y configuración de test runners (pool threads en Vitest).
+- **Por qué se hizo así:** Un check de CI en la nube (Linux) puede enmascarar incompatibilidades de ejecución local en Windows (Node 22 con forks de procesos). Configurar explícitamente `pool: 'threads'` garantiza paridad y reproducibilidad en cualquier máquina.
+- **Qué aprendí:** El comando `npm run verify` unifica linter, compilador de tipos, tests y build en un solo paso inmutable; si falla localmente, no debe llegar a producción aunque el CI remoto pase.
