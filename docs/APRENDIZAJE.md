@@ -37,3 +37,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Renderizado procedimental modular por capas (Layer Pattern) y reactividad gráfica desacoplada.
 - **Por qué se hizo así:** Separar la mascota en capas independientes (orejas, cuerpo, cabeza, ojos, boca, ropa) y recolorear/redibujar cada capa de forma atómica evita regenerar todo el árbol de nodos de PixiJS, asegurando 60 FPS estables al cambiar de ropa o color.
 - **Qué aprendí:** Dibujar elementos visuales vectorialmente con `Graphics` de PixiJS permite una resolución infinita y nítida en pantallas Retina/móviles sin la sobrecarga de descargar decenas de imágenes PNG en el MVP.
+
+---
+
+### T-04B: README Comercial y Documentación del Proyecto
+- **Concepto clave:** Comunicación de producto (Product-Led Documentation) y separación de capas de lectura.
+- **Por qué se hizo así:** El repositorio necesita una puerta de entrada comercial que seduzca al jugador y al desarrollador sin obligarlo a bucear en los diagramas técnicos de `docs/`.
+- **Qué aprendí:** Un buen README balancea la propuesta de valor del juego con las garantías de ingeniería (badges de CI, Clean Architecture y guía de comandos unificada `verify`), generando confianza inmediata.
