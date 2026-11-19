@@ -6,4 +6,7 @@ export type {
   EyeStyle,
   MouthStyle,
   EarStyle,
+  ClothingSlot,
+  ClothingItemId,
+  PetClothes,
 } from './types';

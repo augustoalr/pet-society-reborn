@@ -1,4 +1,6 @@
 import { Application } from 'pixi.js';
+import type { PetAppearance, PetClothes } from '../../domain';
+import { PetView } from '../pet';
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, calculateViewportScale } from '../viewport';
 import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } from './types';
 
@@ -16,6 +18,7 @@ import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } 
 export class PixiGameEngine {
   private app: Application | null = null;
   private container: HTMLElement | null = null;
+  private petView: PetView | null = null;
   private currentScale = 1;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
 
@@ -37,6 +40,11 @@ export class PixiGameEngine {
   /** Referencia al escenario principal (stage) de PixiJS para agregar hijos. */
   get stage(): Application['stage'] | null {
     return this.app?.stage ?? null;
+  }
+
+  /** Referencia a la vista de la mascota renderizada en el escenario virtual. */
+  get pet(): PetView | null {
+    return this.petView;
   }
 
   /**
@@ -71,8 +79,59 @@ export class PixiGameEngine {
 
     this.setupPointerEvents();
 
+    // Inicializa la mascota centrada en el escenario virtual por defecto (T-04)
+    this.spawnPet();
+
     // Ajuste inicial al tamaño del contenedor
     this.resize(container.clientWidth, container.clientHeight);
+  }
+
+  /**
+   * Instancia o reposiciona la mascota en el escenario virtual.
+   *
+   * @param appearance Configuración visual (color, ojos, boca, orejas).
+   * @param clothes Ropa o accesorios opcionales.
+   * @param position Coordenadas en el espacio virtual (centro por defecto: 400, 350).
+   */
+  spawnPet(
+    appearance: PetAppearance = {
+      color: 'pink',
+      eyes: 'round',
+      mouth: 'smile',
+      ears: 'floppy',
+    },
+    clothes?: PetClothes | readonly string[],
+    position: { x: number; y: number } = { x: 400, y: 350 }
+  ): PetView {
+    if (!this.app) {
+      throw new Error('PixiGameEngine no está inicializado.');
+    }
+
+    if (this.petView) {
+      this.petView.updateAppearance(appearance, clothes);
+      this.petView.setPosition(position.x, position.y);
+      return this.petView;
+    }
+
+    this.petView = new PetView(appearance, clothes);
+    this.petView.setPosition(position.x, position.y);
+    this.petView.startIdleAnimation();
+    this.app.stage.addChild(this.petView);
+    return this.petView;
+  }
+
+  /**
+   * Actualiza reactivamente la apariencia de la mascota activa.
+   */
+  updatePetAppearance(
+    appearance: PetAppearance,
+    clothes?: PetClothes | readonly string[]
+  ): void {
+    if (!this.petView && this.app) {
+      this.spawnPet(appearance, clothes);
+      return;
+    }
+    this.petView?.updateAppearance(appearance, clothes);
   }
 
   /**
@@ -121,6 +180,11 @@ export class PixiGameEngine {
   destroy(): void {
     if (!this.app) {
       return;
+    }
+
+    if (this.petView) {
+      this.petView.destroy();
+      this.petView = null;
     }
 
     this.pointerHandlers.clear();
