@@ -23,3 +23,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Inversión de Dependencias (DIP), inmutabilidad estricta y validación estructural en tiempo de ejecución.
 - **Por qué se hizo así:** Separar el contrato de guardado (`IStorageService`) del motor físico (`LocalStorageAdapter`) permite migrar en el futuro a bases de datos en la nube (Supabase) sin tocar el dominio ni la UI. Además, validar la integridad del JSON almacenado antes de cargarlo evita pantallas en blanco por datos corruptos.
 - **Qué aprendí:** Al diseñar persistencia cliente, inyectar el almacén (`Storage`) en el adaptador permite probar fallos de cuota (`QuotaExceededError`) y corrupción de datos en tests unitarios rápidos sin depender del navegador.
+
+---
+
+### T-03: Motor Gráfico 2D Base y Lienzo Responsive
+- **Concepto clave:** Desacoplamiento de renderizado WebGL/Canvas de React y lógica de escalado con resolución virtual fija.
+- **Por qué se hizo así:** Separar las matemáticas de relación de aspecto (`calculateViewportScale`) en funciones puras permite testear el soporte para móviles, tablets y monitores ultra-panorámicos en Node sin necesidad de renderizar WebGL.
+- **Qué aprendí:** En motores 2D, definir un lienzo virtual inmutable (800x600) y escalar mediante letterbox/pillarbox preserva la proporción del juego sin distorsionar gráficos ni requerir recalcular posiciones relativas en cada sprite.

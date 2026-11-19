@@ -32,12 +32,13 @@ Leyenda de etiquetas:
 
 ### Sprint 2: Mecánicas Núcleo de Mascota y Render 2D
 
-#### T-03: Motor Gráfico 2D Base y Lienzo Responsive
+#### T-03: Motor Gráfico 2D Base y Lienzo Responsive [COMPLETADA]
 - **Dependencias:** T-01
+- **Merge:** Commit `270fa21` en `main` (PR #6).
 - **Objetivo:** Montar el viewport de PixiJS integrado en React con resolución virtual fija adaptable a pantallas móviles y de escritorio (escalado con preservación de relación de aspecto).
 - **Criterios de Aceptación:**
-  1. El lienzo de juego mantiene su proporción visual sin deformarse en redimensionamiento de ventana y dispositivos móviles táctiles.
-  2. Soporte para eventos de puntero (clic y toque táctil unificados).
+  1. El lienzo de juego mantiene su proporción visual sin deformarse en redimensionamiento de ventana y dispositivos móviles táctiles [CUMPLIDO].
+  2. Soporte para eventos de puntero (clic y toque táctil unificados) [CUMPLIDO].
 
 #### T-04: Sistema de Renderizado de Mascota por Capas
 - **Dependencias:** T-02, T-03
