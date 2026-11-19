@@ -10,13 +10,14 @@ Leyenda de etiquetas:
 
 ### Sprint 1: Cimientos y Arquitectura Base
 
-#### T-01: Configuración del Proyecto y Entorno de Verificación
+#### T-01: Configuración del Proyecto y Entorno de Verificación [COMPLETADA]
 - **Dependencias:** Ninguna
+- **Merge:** Commit `5c120b8` en `main` (PR #2).
 - **Objetivo:** Inicializar el proyecto con Vite, React, TypeScript, PixiJS y configurar el script `npm run verify` que corre linter, chequeo de tipos TypeScript y tests.
 - **Criterios de Aceptación:**
-  1. Repositorio compila limpiamente con `npm run build`.
-  2. `npm run verify` ejecuta verificación de tipos (`tsc --noEmit`), linter y suite de tests básica sin errores.
-  3. Estructura de carpetas según `docs/ARQUITECTURA.md` creada.
+  1. Repositorio compila limpiamente con `npm run build` [CUMPLIDO].
+  2. `npm run verify` ejecuta verificación de tipos (`tsc --noEmit`), linter y suite de tests básica sin errores [CUMPLIDO].
+  3. Estructura de carpetas según `docs/ARQUITECTURA.md` creada [CUMPLIDO].
 
 #### T-02: [DELICADA] Capa de Persistencia Agnóstica y Modelos de Dominio
 - **Dependencias:** T-01
