@@ -63,14 +63,15 @@ src/
 │   ├── pet/           # Tipos de mascota, cálculo de estados
 │   ├── inventory/     # Items, ropa, muebles, categorías
 │   ├── economy/       # Reglas de compras, billetera
-│   └── shop/          # Catálogo comercial, lógica inmutable de compras y validaciones
+│   ├── shop/          # Catálogo comercial, lógica inmutable de compras y validaciones
+│   └── minigame/      # Cinemática de pelota, gravedad, rebotes y cálculo de recompensas
 ├── infrastructure/    # Adaptadores a librerías y almacenamiento
 │   ├── storage/       # IStorageService, LocalStorageAdapter, SupabaseAdapter
 │   └── audio/         # Wrapper de audio
 ├── game/              # Motor gráfico 2D (PixiJS)
 │   ├── pet/           # Renderizado de capas (cuerpo, ojos, ropa)
 │   ├── room/          # Renderizado de habitación, muebles, colisiones
-│   └── minigames/     # Módulos de minijuegos independientes
+│   └── minigame/      # Escenario exterior de jardín y render de pelota deportiva
 ├── ui/                # Componentes visuales React (HUD, menús, popups)
 │   ├── components/    # Botones, modales, barras de progreso
 │   ├── hud/           # Barras de necesidades, balance de monedas

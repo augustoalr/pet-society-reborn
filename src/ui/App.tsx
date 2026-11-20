@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { MinigameStatus } from '../domain';
 import { usePetCare } from '../infrastructure';
 import { theme } from '../styles';
 import {
@@ -9,6 +10,7 @@ import {
   FoodSelectorModal,
   DecorationPanel,
   ShopModal,
+  MinigameHUD,
 } from './components';
 
 /**
@@ -38,12 +40,26 @@ export const App: React.FC = () => {
     moveFurniture,
     removeFurniture,
     buyItem,
+    recordMinigameResult,
   } = usePetCare();
 
+  const [viewMode, setViewMode] = useState<'room' | 'minigame'>('room');
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const [activeBottomTab, setActiveBottomTab] = useState<'care' | 'customize' | 'decorate'>('care');
   const [selectedFurnitureId, setSelectedFurnitureId] = useState<string | null>(null);
+
+  // Estados reactivos del minijuego de pelota en el jardín (T-09)
+  const [minigameScore, setMinigameScore] = useState(0);
+  const [minigameCombo, setMinigameCombo] = useState(0);
+  const [minigameHighScore, setMinigameHighScore] = useState(0);
+  const [minigameStatus, setMinigameStatus] = useState<MinigameStatus>('idle');
+  const [minigameSessionCoins, setMinigameSessionCoins] = useState(0);
+  const [lastMinigameReward, setLastMinigameReward] = useState<{
+    coins: number;
+    happiness: number;
+  }>({ coins: 0, happiness: 0 });
+  const [restartSignal, setRestartSignal] = useState(0);
 
   if (isLoading || !gameState) {
     return (
@@ -100,7 +116,7 @@ export const App: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.medium }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.small }}>
           <span>Pet Society</span>
           <button
             type="button"
@@ -124,78 +140,147 @@ export const App: React.FC = () => {
             <span aria-hidden="true">🏪</span>
             <span>Tienda</span>
           </button>
+
+          {/* Selector de modo Habitación / Minijuego Jardín */}
+          {viewMode === 'room' ? (
+            <button
+              type="button"
+              onClick={() => {
+                setViewMode('minigame');
+                setMinigameStatus('idle');
+                setMinigameScore(0);
+                setMinigameCombo(0);
+                setSelectedFurnitureId(null);
+              }}
+              aria-label="Ir al Jardín a Jugar"
+              style={{
+                backgroundColor: '#10B981',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              }}
+            >
+              <span aria-hidden="true">⚽</span>
+              <span>Jardín</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setViewMode('room')}
+              aria-label="Volver a la Habitación"
+              style={{
+                backgroundColor: theme.colors.primaryDark,
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              }}
+            >
+              <span aria-hidden="true">🏠</span>
+              <span>Habitación</span>
+            </button>
+          )}
         </div>
 
-        {/* Pestañas de vista inferior */}
-        <div style={{ display: 'flex', gap: theme.spacing.xs }}>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveBottomTab('care');
-              setSelectedFurnitureId(null);
-            }}
+        {/* Pestañas de navegación según el modo activo */}
+        {viewMode === 'room' ? (
+          <div style={{ display: 'flex', gap: theme.spacing.xs }}>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveBottomTab('care');
+                setSelectedFurnitureId(null);
+              }}
+              style={{
+                backgroundColor:
+                  activeBottomTab === 'care'
+                    ? theme.colors.primaryDark
+                    : 'transparent',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              Cuidados
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveBottomTab('customize');
+                setSelectedFurnitureId(null);
+              }}
+              style={{
+                backgroundColor:
+                  activeBottomTab === 'customize'
+                    ? theme.colors.primaryDark
+                    : 'transparent',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              Personalizar
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveBottomTab('decorate')}
+              style={{
+                backgroundColor:
+                  activeBottomTab === 'decorate'
+                    ? theme.colors.primaryDark
+                    : 'transparent',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <span>🛋️</span>
+              <span>Decorar</span>
+            </button>
+          </div>
+        ) : (
+          <div
             style={{
-              backgroundColor:
-                activeBottomTab === 'care'
-                  ? theme.colors.primaryDark
-                  : 'transparent',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: theme.borderRadius.small,
-              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '4px 10px',
+              borderRadius: theme.borderRadius.pill,
             }}
           >
-            Cuidados
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveBottomTab('customize');
-              setSelectedFurnitureId(null);
-            }}
-            style={{
-              backgroundColor:
-                activeBottomTab === 'customize'
-                  ? theme.colors.primaryDark
-                  : 'transparent',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: theme.borderRadius.small,
-              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            Personalizar
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveBottomTab('decorate')}
-            style={{
-              backgroundColor:
-                activeBottomTab === 'decorate'
-                  ? theme.colors.primaryDark
-                  : 'transparent',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: theme.borderRadius.small,
-              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            <span>🛋️</span>
-            <span>Decorar</span>
-          </button>
-        </div>
+            ⚽ Minijuego: Malabares con Pelota
+          </div>
+        )}
       </header>
 
       {/* HUD de Necesidades y Estado Vital */}
@@ -227,17 +312,60 @@ export const App: React.FC = () => {
           appearance={currentPet.appearance}
           clothes={currentPet.clothes}
           room={room}
-          isDecorating={activeBottomTab === 'decorate'}
+          mode={viewMode}
+          restartMinigameSignal={restartSignal}
+          isDecorating={viewMode === 'room' && activeBottomTab === 'decorate'}
           selectedFurnitureId={selectedFurnitureId}
           onPetClick={pet}
           onFurnitureMove={(itemId, newPos) => {
             moveFurniture(itemId, newPos);
           }}
           onFurnitureSelect={setSelectedFurnitureId}
+          onMinigameScoreChange={(score, combo) => {
+            setMinigameScore(score);
+            setMinigameCombo(combo);
+            setMinigameStatus('playing');
+          }}
+          onMinigameGameOver={(finalScore) => {
+            setMinigameStatus('game_over');
+            const reward = recordMinigameResult(finalScore);
+            setLastMinigameReward({
+              coins: reward.coinsEarned,
+              happiness: reward.happinessEarned,
+            });
+            setMinigameSessionCoins((prev) => prev + reward.coinsEarned);
+            setMinigameHighScore((prev) => Math.max(prev, finalScore));
+          }}
+          onMinigameStateChange={(state) => {
+            setMinigameStatus(state.status);
+            setMinigameScore(state.score);
+            setMinigameCombo(state.combo);
+            setMinigameHighScore(state.highScore);
+          }}
         />
 
+        {/* HUD superpuesto del minijuego de pelota */}
+        {viewMode === 'minigame' && (
+          <MinigameHUD
+            status={minigameStatus}
+            score={minigameScore}
+            combo={minigameCombo}
+            highScore={minigameHighScore}
+            sessionCoins={minigameSessionCoins}
+            lastEarnedCoins={lastMinigameReward.coins}
+            lastEarnedHappiness={lastMinigameReward.happiness}
+            onRestart={() => {
+              setMinigameStatus('idle');
+              setMinigameScore(0);
+              setMinigameCombo(0);
+              setRestartSignal((prev) => prev + 1);
+            }}
+            onExitToRoom={() => setViewMode('room')}
+          />
+        )}
+
         {/* Indicador flotante en modo decoración */}
-        {activeBottomTab === 'decorate' && (
+        {viewMode === 'room' && activeBottomTab === 'decorate' && (
           <div
             style={{
               position: 'absolute',
@@ -317,7 +445,7 @@ export const App: React.FC = () => {
           padding: theme.spacing.small,
         }}
       >
-        {activeBottomTab === 'care' && (
+        {viewMode === 'room' && activeBottomTab === 'care' && (
           <div style={{ padding: `${theme.spacing.xs} 0` }}>
             <CareActions
               onOpenFoodModal={() => setIsFoodModalOpen(true)}
@@ -328,7 +456,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {activeBottomTab === 'customize' && (
+        {viewMode === 'room' && activeBottomTab === 'customize' && (
           <PetCustomizer
             appearance={currentPet.appearance}
             onChangeAppearance={updateAppearance}
@@ -337,7 +465,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeBottomTab === 'decorate' && (
+        {viewMode === 'room' && activeBottomTab === 'decorate' && (
           <DecorationPanel
             inventory={inventory}
             room={room}
@@ -353,6 +481,22 @@ export const App: React.FC = () => {
             }}
             onSelectPlacedItem={setSelectedFurnitureId}
           />
+        )}
+
+        {viewMode === 'minigame' && (
+          <div
+            style={{
+              padding: `${theme.spacing.xs} ${theme.spacing.medium}`,
+              textAlign: 'center',
+              fontFamily: 'sans-serif',
+              fontSize: '0.85rem',
+              color: theme.colors.textMuted,
+            }}
+          >
+            <span>
+              ⚽ <strong>Jardín exterior:</strong> Haz clic o toca la pelota antes de que caiga al suelo. ¡Cuanto mayor sea tu combo, más monedas y felicidad ganarás!
+            </span>
+          </div>
         )}
       </footer>
 

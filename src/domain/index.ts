@@ -81,3 +81,25 @@ export {
   findShopItem,
   processPurchase,
 } from './shop';
+
+export type {
+  MinigameStatus,
+  GameBounds,
+  BallPhysicsConfig,
+  BallState,
+  BallGameState,
+  MinigameReward,
+} from './minigame';
+
+export {
+  DEFAULT_BALL_BOUNDS,
+  DEFAULT_BALL_CONFIG,
+  isPointInsideBall,
+  createInitialBallGameState,
+  startBallGame,
+  updateBallPhysics,
+  hitBall,
+  calculateCoinReward,
+  calculateHappinessReward,
+  calculateMinigameReward,
+} from './minigame';

@@ -37,3 +37,6 @@ export {
 } from './room';
 export type { RoomLayoutConfig, FurnitureDefinition, FurnitureMovedEvent } from './room';
 
+export { BallGameView } from './minigame';
+export type { BallGameViewOptions } from './minigame';
+
