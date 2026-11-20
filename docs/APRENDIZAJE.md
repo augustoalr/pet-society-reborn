@@ -58,3 +58,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Simulación temporal offline/online mediante funciones deterministas y desacoplamiento de ciclo de vida.
 - **Por qué se hizo así:** Almacenar `lastSavedTimestamp` permite calcular el decaimiento de necesidades acumulado en el momento exacto en que el usuario recarga la app (`elapsedSeconds`), sin requerir procesos en segundo plano costosos o servidores activos.
 - **Qué aprendí:** Las acciones sobre necesidades (`feedPet`, `cleanPet`, `petAnimal`) deben tratarse como transacciones atómicas inmutables con validación de rango cerrado `[0, 100]`, asegurando que la interfaz de usuario nunca reciba estados inconsistentes.
+
+---
+
+### T-06: [DELICADA] Sistema de Economía y Billetera Dual (Coins y Cash)
+- **Concepto clave:** Atomicidad multidivisa, prevención de Split-Brain en persistencia y validación contra exploits de costos negativos.
+- **Por qué se hizo así:** Si las operaciones de billetera se gestionaran en un hook de React separado sin coordinar con el repositorio central, un guardado en memoria de necesidades sobrescribiría los saldos de la billetera (Split-Brain). Además, en sistemas financieros de videojuegos, cualquier función de débito debe rechazar montos negativos para evitar que un atacante genere dinero de la nada al "comprar" un ítem con precio negativo.
+- **Qué aprendí:** Centralizar las mutaciones atómicas en el hook orquestador del estado y tratar las compras como transacciones que verifican saldo, deducen fondos y persisten en un único ciclo de escritura garantiza coherencia absoluta sin condiciones de carrera.

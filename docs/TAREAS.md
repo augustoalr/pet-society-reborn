@@ -82,12 +82,15 @@ Leyenda de etiquetas:
 
 ### Sprint 3: Habitación, Decoración y Economía
 
-#### T-06: [DELICADA] Sistema de Economía y Billetera Dual (Coins y Cash)
+#### T-06: [DELICADA] Sistema de Economía y Billetera Dual (Coins y Cash) [COMPLETADA]
 - **Dependencias:** T-02
+- **Merge:** Commit `4f80a6b` en `main` (PR #20).
 - **Objetivo:** Implementar el servicio de billetera que maneja monedas estándar (`coins`) y moneda premium (`cash`), asegurando validación estricta de saldo sin valores negativos.
 - **Criterios de Aceptación:**
-  1. Métodos para acreditar, debitar y consultar balance con pruebas unitarias exhaustivas.
-  2. Prevención de transacciones inválidas o saldo negativo.
+  1. Métodos para acreditar, debitar y consultar balance con pruebas unitarias exhaustivas [CUMPLIDO].
+  2. Prevención de transacciones inválidas o saldo negativo y rechazo de costos negativos [CUMPLIDO].
+  3. Integración atómica y no invasiva en `usePetCare` previniendo split-brain en guardado y sincronización [CUMPLIDO].
+  4. Soporte para compras compuestas multidivisa con historial de transacciones tipado [CUMPLIDO].
 
 #### T-07: Habitación y Sistema de Muebles / Decoración
 - **Dependencias:** T-03, T-04
