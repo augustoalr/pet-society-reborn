@@ -65,3 +65,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Atomicidad multidivisa, prevención de Split-Brain en persistencia y validación contra exploits de costos negativos.
 - **Por qué se hizo así:** Si las operaciones de billetera se gestionaran en un hook de React separado sin coordinar con el repositorio central, un guardado en memoria de necesidades sobrescribiría los saldos de la billetera (Split-Brain). Además, en sistemas financieros de videojuegos, cualquier función de débito debe rechazar montos negativos para evitar que un atacante genere dinero de la nada al "comprar" un ítem con precio negativo.
 - **Qué aprendí:** Centralizar las mutaciones atómicas en el hook orquestador del estado y tratar las compras como transacciones que verifican saldo, deducen fondos y persisten en un único ciclo de escritura garantiza coherencia absoluta sin condiciones de carrera.
+
+---
+
+### T-07: Habitación y Sistema de Muebles / Decoración
+- **Concepto clave:** Renderizado por capas con ordenamiento de profundidad (Y-sorting) y manipulación espacial acotada (Spatial Clamping).
+- **Por qué se hizo así:** En juegos con perspectiva isométrica o 2.5D, los objetos más cercanos al borde inferior de la pantalla deben dibujarse por delante de los más lejanos para crear una ilusión de volumen tridimensional correcta. Además, acotar las coordenadas en funciones matemáticas puras independientes de PixiJS previene que los muebles se salgan del lienzo ante eventos táctiles erráticos.
+- **Qué aprendí:** Separar la geometría matemática de la sala (`roomLogic.ts`) del renderizado en PixiJS (`RoomView` / `FurnitureView`) permite comprobar las restricciones físicas de decoración con pruebas unitarias instantáneas sin montar un lienzo WebGL real.
