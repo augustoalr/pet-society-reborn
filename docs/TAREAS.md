@@ -92,12 +92,16 @@ Leyenda de etiquetas:
   3. Integración atómica y no invasiva en `usePetCare` previniendo split-brain en guardado y sincronización [CUMPLIDO].
   4. Soporte para compras compuestas multidivisa con historial de transacciones tipado [CUMPLIDO].
 
-#### T-07: Habitación y Sistema de Muebles / Decoración
+#### T-07: Habitación y Sistema de Muebles / Decoración [COMPLETADA]
 - **Dependencias:** T-03, T-04
+- **Merge:** Commit `7579016` en `main` (PR #22).
 - **Objetivo:** Renderizar la habitación de la mascota con soporte para colocar, mover y guardar la posición de los muebles en el espacio.
 - **Criterios de Aceptación:**
-  1. Posicionamiento de muebles en cuadrícula o coordenadas restringidas de sala.
-  2. Guardado y restauración de la disposición de la habitación desde el almacenamiento.
+  1. Posicionamiento de muebles en coordenadas acotadas de la sala y suelo con funciones puras `roomLogic.ts` [CUMPLIDO].
+  2. Guardado y restauración de la disposición de la habitación desde el almacenamiento sincronizado en `usePetCare` [CUMPLIDO].
+  3. Renderizado procedural de la habitación en PixiJS (pared, papel tapiz, ventana panorámica, rodapié y parquet) en 800x600 [CUMPLIDO].
+  4. Manipulación interactiva (Drag & Drop y selección) con ordenamiento dinámico de profundidad Z-sorting según coordenada Y [CUMPLIDO].
+  5. Modo Decorar con baúl de muebles y retorno al inventario [CUMPLIDO].
 
 #### T-08: Tienda de Ítems (Comida, Ropa, Muebles)
 - **Dependencias:** T-05, T-06, T-07
