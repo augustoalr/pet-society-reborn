@@ -29,7 +29,24 @@ export {
   petAnimal,
 } from './pet';
 
-export type { Wallet } from './economy';
+export type {
+  Wallet,
+  CurrencyType,
+  TransactionType,
+  EconomyErrorCode,
+  Transaction,
+  TransactionResult,
+  PurchaseCost,
+} from './economy';
+
+export {
+  validateAmount,
+  generateTransactionId,
+  creditCurrency,
+  debitCurrency,
+  canAfford,
+  purchase,
+} from './economy';
 export type { InventoryItem, Inventory, ItemCategory } from './inventory';
 export type { Room, PlacedItem } from './room';
 export type { GameState } from './game';
