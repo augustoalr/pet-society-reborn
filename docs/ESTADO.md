@@ -15,6 +15,7 @@
 | T-05 Necesidades y Cuidados | T-05 necesidades-cuidados | t-05-necesidades-cuidados | Local | #17 | Hecho | 2026-11-19 | 2026-11-19 (9d969cb) | Decremento temporal offline/online, HUD y acciones de cuidado |
 | T-06 Economía y Billetera | T-06 economia | t-06-economia | Local | #20 | Hecho | 2026-11-19 | 2026-11-20 (4f80a6b) | [DELICADA] Billetera dual coins/cash, compras atómicas y transacciones |
 | T-07 Habitación y Muebles | T-07 habitacion-decoracion | t-07-habitacion-decoracion | Local | #22 | Hecho | 2026-11-20 | 2026-11-20 (7579016) | Habitación procedimental 800x600, catálogo de muebles, drag&drop, z-sorting y persistencia |
+| T-08 Tienda de Ítems | T-08 tienda-items | t-08-tienda-items | Local | #24 | Hecho | 2026-11-20 | 2026-11-20 (a78a252) | Catálogo por categorías (comida, ropa, muebles), validación de compra y feedback visual |
 
 ## Conversaciones activas
 - Manager (fija)
