@@ -117,12 +117,16 @@ Leyenda de etiquetas:
 
 ### Sprint 4: Minijuego y Pulido del MVP
 
-#### T-09: Minijuego de Habilidad Clásico (Pelota en el Jardín / Malabares)
+#### T-09: Minijuego de Habilidad Clásico (Pelota en el Jardín / Malabares) [COMPLETADA]
 - **Dependencias:** T-03, T-06
 - **Objetivo:** Implementar el primer minijuego interactivo donde el jugador hace rebotar una pelota con toques/clics para ganar monedas y felicidad para su mascota.
 - **Criterios de Aceptación:**
-  1. Mecánica de juego fluida tanto con ratón como con pantalla táctil.
-  2. Contador de toques/puntos que recompensa con monedas al finalizar la partida.
+  1. Mecánica de juego fluida tanto con ratón como con pantalla táctil con física de rebotes elásticos y modulación horizontal según punto de impacto [CUMPLIDO].
+  2. Contador de toques y combo en tiempo real que recompensa con monedas e incrementa la felicidad de la mascota al finalizar la partida [CUMPLIDO].
+  3. Lógica pura e inmutable de cinemática, gravedad y colisiones en `ballGameLogic.ts` con cobertura de pruebas unitarias exhaustiva [CUMPLIDO].
+  4. Escenario procedimental 100% vectorial en PixiJS (`BallGameView.ts`) con jardín, cielo, nubes, colinas, valla, césped, pelota con textura deportiva, sombra reactiva, efecto squash & stretch y chispas de golpe [CUMPLIDO].
+  5. Componente React accesible `MinigameHUD.tsx` con marcador en vivo, récord, monedas acumuladas y modal de Game Over con botones de reinicio y retorno [CUMPLIDO].
+  6. Integración atómica con `usePetCare` (`recordMinigameResult`), acreditación en billetera y persistencia automática en `GameStateRepository` [CUMPLIDO].
 
 #### T-10: Pulido Visual, Audio Wrapper y Validación del MVP
 - **Dependencias:** T-05, T-08, T-09

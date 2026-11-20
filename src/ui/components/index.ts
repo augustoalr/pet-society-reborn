@@ -13,3 +13,5 @@ export { DecorationPanel } from './DecorationPanel';
 export type { DecorationPanelProps } from './DecorationPanel';
 export { ShopModal } from './ShopModal';
 export type { ShopModalProps, ShopFilterCategory } from './ShopModal';
+export { MinigameHUD } from './MinigameHUD';
+export type { MinigameHUDProps } from './MinigameHUD';

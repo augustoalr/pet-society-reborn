@@ -32,6 +32,9 @@ import {
   returnFurnitureToInventory,
   DEFAULT_ROOM_BOUNDS,
   processPurchase,
+  calculateCoinReward,
+  calculateHappinessReward,
+  clampNeed,
 } from '../../domain';
 import { GameStateRepository, LocalStorageAdapter } from '../storage';
 
@@ -69,6 +72,10 @@ export interface UsePetCareResult {
     shopItemId: string,
     quantity?: number
   ) => { success: boolean; error?: string };
+  readonly recordMinigameResult: (score: number) => {
+    coinsEarned: number;
+    happinessEarned: number;
+  };
 }
 
 // Repositorio por defecto como singleton en runtime
@@ -683,6 +690,73 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     [repository, triggerFeedback]
   );
 
+  // 15. Liquidación atómica de recompensas de minijuegos (T-09)
+  const recordMinigameResult = useCallback(
+    (score: number): { coinsEarned: number; happinessEarned: number } => {
+      if (!latestStateRef.current) {
+        return { coinsEarned: 0, happinessEarned: 0 };
+      }
+
+      const current = latestStateRef.current;
+      const coinsEarned = calculateCoinReward(score);
+      const happinessEarned = calculateHappinessReward(score);
+
+      if (coinsEarned <= 0 && happinessEarned <= 0) {
+        return { coinsEarned: 0, happinessEarned: 0 };
+      }
+
+      // 1. Acreditar monedas a la billetera mediante la regla pura de dominio
+      let updatedWallet = current.wallet;
+      if (coinsEarned > 0) {
+        const creditResult = creditCurrency(
+          current.wallet,
+          'coins',
+          coinsEarned,
+          'Recompensa minijuego de pelota'
+        );
+        if (creditResult.success) {
+          updatedWallet = creditResult.wallet;
+        }
+      }
+
+      // 2. Incrementar la felicidad de la mascota según su desempeño
+      let updatedPet = current.pet;
+      if (happinessEarned > 0) {
+        const newHappiness = clampNeed(current.pet.needs.happiness + happinessEarned);
+        updatedPet = {
+          ...current.pet,
+          needs: {
+            ...current.pet.needs,
+            happiness: newHappiness,
+          },
+        };
+      }
+
+      // 3. Persistencia atómica de estado
+      const nextState: GameState = {
+        ...current,
+        wallet: updatedWallet,
+        pet: updatedPet,
+        lastSavedTimestamp: Date.now(),
+      };
+
+      latestStateRef.current = nextState;
+      setGameState(nextState);
+      repository.saveGameState(nextState).catch(() => {});
+
+      if (coinsEarned > 0 && happinessEarned > 0) {
+        triggerFeedback(
+          `¡Fin del juego! Ganaste ${coinsEarned} monedas y +${happinessEarned} felicidad 🎉`
+        );
+      } else if (coinsEarned > 0) {
+        triggerFeedback(`¡Fin del juego! Ganaste ${coinsEarned} monedas 🪙`);
+      }
+
+      return { coinsEarned, happinessEarned };
+    },
+    [repository, triggerFeedback]
+  );
+
   return {
     gameState,
     isLoading,
@@ -705,5 +779,6 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     moveFurniture,
     removeFurniture,
     buyItem,
+    recordMinigameResult,
   };
 }

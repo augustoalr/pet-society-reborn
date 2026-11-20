@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { PetAppearance, PetClothes, Room } from '../../domain';
+import type { BallGameState, PetAppearance, PetClothes, Room } from '../../domain';
 import { PixiGameEngine } from '../../game';
 import { theme } from '../../styles';
 
@@ -18,12 +18,22 @@ export interface GameCanvasProps {
   readonly room?: Room;
   readonly isDecorating?: boolean;
   readonly selectedFurnitureId?: string | null;
+  /** Modo de renderizado activo: 'room' (habitación principal) o 'minigame' (jardín y pelota). */
+  readonly mode?: 'room' | 'minigame';
+  /** Señal numérica incremental para reiniciar la partida de pelota. */
+  readonly restartMinigameSignal?: number;
   /** Callback al hacer clic o tocar sobre la mascota (para acariciarla). */
   readonly onPetClick?: () => void;
   /** Callback al arrastrar y soltar un mueble a una nueva posición. */
   readonly onFurnitureMove?: (itemId: string, newPosition: { x: number; y: number }) => void;
   /** Callback al seleccionar un mueble en el escenario. */
   readonly onFurnitureSelect?: (itemId: string | null) => void;
+  /** Callback de cambio de puntuación en el minijuego de pelota. */
+  readonly onMinigameScoreChange?: (score: number, combo: number) => void;
+  /** Callback cuando la pelota toca el suelo (fin de partida del minijuego). */
+  readonly onMinigameGameOver?: (finalScore: number, coinsEarned: number) => void;
+  /** Callback de actualización de estado general del minijuego. */
+  readonly onMinigameStateChange?: (state: BallGameState) => void;
 }
 
 /**
@@ -46,9 +56,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   room,
   isDecorating,
   selectedFurnitureId,
+  mode = 'room',
+  restartMinigameSignal,
   onPetClick,
   onFurnitureMove,
   onFurnitureSelect,
+  onMinigameScoreChange,
+  onMinigameGameOver,
+  onMinigameStateChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<PixiGameEngine | null>(null);
@@ -148,6 +163,29 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       });
     }
   }, [onFurnitureMove, onFurnitureSelect, status]);
+
+  // Sincronización del modo de juego ('room' vs 'minigame')
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.setGameMode(mode);
+    }
+  }, [mode, status]);
+
+  // Señal de reinicio de la partida del minijuego
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current && restartMinigameSignal !== undefined) {
+      engineRef.current.restartBallGame();
+    }
+  }, [restartMinigameSignal, status]);
+
+  // Handlers reactivos del minijuego
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.setMinigameScoreHandler(onMinigameScoreChange ?? null);
+      engineRef.current.setMinigameGameOverHandler(onMinigameGameOver ?? null);
+      engineRef.current.setMinigameStateChangeHandler(onMinigameStateChange ?? null);
+    }
+  }, [onMinigameScoreChange, onMinigameGameOver, onMinigameStateChange, status]);
 
   return (
     <div

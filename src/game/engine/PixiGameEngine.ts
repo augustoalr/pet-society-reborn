@@ -1,7 +1,8 @@
 import { Application } from 'pixi.js';
-import type { PetAppearance, PetClothes, Room } from '../../domain';
+import type { BallGameState, PetAppearance, PetClothes, Room } from '../../domain';
 import { PetView } from '../pet';
 import { RoomView, FurnitureView } from '../room';
+import { BallGameView } from '../minigame';
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, calculateViewportScale } from '../viewport';
 import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } from './types';
 
@@ -24,6 +25,16 @@ export class PixiGameEngine {
   private roomView: RoomView | null = null;
   private petView: PetView | null = null;
   private readonly furnitureViews = new Map<string, FurnitureView>();
+  private ballGameView: BallGameView | null = null;
+
+  private gameMode: 'room' | 'minigame' = 'room';
+  private currentPetAppearance: PetAppearance = {
+    color: 'pink',
+    eyes: 'round',
+    mouth: 'smile',
+    ears: 'floppy',
+  };
+  private currentPetClothes?: PetClothes | readonly string[];
 
   private currentScale = 1;
   private decoratingMode = false;
@@ -32,6 +43,9 @@ export class PixiGameEngine {
   private petClickHandler: (() => void) | null = null;
   private furnitureMovedHandler: ((itemId: string, position: { x: number; y: number }) => void) | null = null;
   private furnitureSelectedHandler: ((itemId: string | null) => void) | null = null;
+  private minigameScoreHandler: ((score: number, combo: number) => void) | null = null;
+  private minigameGameOverHandler: ((finalScore: number, coinsEarned: number) => void) | null = null;
+  private minigameStateChangeHandler: ((state: BallGameState) => void) | null = null;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
 
   /** Indica si el motor está inicializado y listo para renderizar. */
@@ -77,6 +91,39 @@ export class PixiGameEngine {
   /** Identificador del mueble actualmente seleccionado o null. */
   get selectedFurniture(): string | null {
     return this.selectedFurnitureId;
+  }
+
+  /** Modo de juego activo ('room' o 'minigame'). */
+  get mode(): 'room' | 'minigame' {
+    return this.gameMode;
+  }
+
+  /** Referencia a la vista del minijuego de pelota exterior. */
+  get ballGame(): BallGameView | null {
+    return this.ballGameView;
+  }
+
+  /**
+   * Configura el callback al cambiar la puntuación o el combo del minijuego.
+   */
+  setMinigameScoreHandler(handler: ((score: number, combo: number) => void) | null): void {
+    this.minigameScoreHandler = handler;
+  }
+
+  /**
+   * Configura el callback al finalizar la partida del minijuego.
+   */
+  setMinigameGameOverHandler(
+    handler: ((finalScore: number, coinsEarned: number) => void) | null
+  ): void {
+    this.minigameGameOverHandler = handler;
+  }
+
+  /**
+   * Configura el callback de sincronización de estado completo del minijuego.
+   */
+  setMinigameStateChangeHandler(handler: ((state: BallGameState) => void) | null): void {
+    this.minigameStateChangeHandler = handler;
   }
 
   /**
@@ -145,6 +192,24 @@ export class PixiGameEngine {
     // 2. Inicializa la mascota centrada en el escenario virtual por defecto (T-04)
     this.spawnPet();
 
+    // 3. Inicializa el minijuego de pelota en el jardín exterior (T-09)
+    this.ballGameView = new BallGameView({
+      appearance: this.currentPetAppearance,
+      clothes: this.currentPetClothes,
+      onScoreChange: (score, combo) => {
+        this.minigameScoreHandler?.(score, combo);
+      },
+      onGameOver: (finalScore, coinsEarned) => {
+        this.minigameGameOverHandler?.(finalScore, coinsEarned);
+      },
+      onStateChange: (state) => {
+        this.minigameStateChangeHandler?.(state);
+      },
+    });
+    this.ballGameView.visible = false;
+    this.ballGameView.zIndex = 5000;
+    this.app.stage.addChild(this.ballGameView);
+
     // Ajuste inicial al tamaño del contenedor
     this.resize(container.clientWidth, container.clientHeight);
   }
@@ -204,11 +269,68 @@ export class PixiGameEngine {
     appearance: PetAppearance,
     clothes?: PetClothes | readonly string[]
   ): void {
+    this.currentPetAppearance = appearance;
+    this.currentPetClothes = clothes;
+
     if (!this.petView && this.app) {
       this.spawnPet(appearance, clothes);
+    } else {
+      this.petView?.updateAppearance(appearance, clothes);
+    }
+
+    this.ballGameView?.updatePetAppearance(appearance, clothes);
+  }
+
+  /**
+   * Cambia el modo de juego activo entre la habitación ('room') y el minijuego de pelota ('minigame').
+   */
+  setGameMode(mode: 'room' | 'minigame'): void {
+    if (this.gameMode === mode) {
       return;
     }
-    this.petView?.updateAppearance(appearance, clothes);
+    this.gameMode = mode;
+
+    if (mode === 'room') {
+      if (this.roomView) {
+        this.roomView.visible = true;
+      }
+      for (const view of this.furnitureViews.values()) {
+        view.visible = true;
+      }
+      if (this.petView) {
+        this.petView.visible = true;
+        this.petView.setPosition(400, 350);
+      }
+      if (this.ballGameView) {
+        this.ballGameView.visible = false;
+        this.ballGameView.pause();
+      }
+    } else {
+      if (this.roomView) {
+        this.roomView.visible = false;
+      }
+      for (const view of this.furnitureViews.values()) {
+        view.visible = false;
+      }
+      if (this.petView) {
+        this.petView.visible = false;
+      }
+      if (this.ballGameView) {
+        this.ballGameView.visible = true;
+        this.ballGameView.updatePetAppearance(
+          this.currentPetAppearance,
+          this.currentPetClothes
+        );
+        this.ballGameView.resume();
+      }
+    }
+  }
+
+  /**
+   * Reinicia la ronda del minijuego de pelota.
+   */
+  restartBallGame(highScore?: number): void {
+    this.ballGameView?.resetGame(highScore);
   }
 
   /**
@@ -367,10 +489,18 @@ export class PixiGameEngine {
       this.petView = null;
     }
 
+    if (this.ballGameView) {
+      this.ballGameView.destroy();
+      this.ballGameView = null;
+    }
+
     this.pointerHandlers.clear();
     this.petClickHandler = null;
     this.furnitureMovedHandler = null;
     this.furnitureSelectedHandler = null;
+    this.minigameScoreHandler = null;
+    this.minigameGameOverHandler = null;
+    this.minigameStateChangeHandler = null;
 
     this.app.destroy(true, { children: true });
     this.app = null;
