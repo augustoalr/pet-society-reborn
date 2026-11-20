@@ -1,6 +1,7 @@
 import { Application } from 'pixi.js';
-import type { PetAppearance, PetClothes } from '../../domain';
+import type { PetAppearance, PetClothes, Room } from '../../domain';
 import { PetView } from '../pet';
+import { RoomView, FurnitureView } from '../room';
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, calculateViewportScale } from '../viewport';
 import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } from './types';
 
@@ -12,15 +13,25 @@ import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } 
  *
  * Responsabilidades:
  * - Inicializar y destruir la aplicación WebGL de forma segura.
- * - Escalar el lienzo manteniendo la resolución virtual fija (R-09).
- * - Abstraer los eventos de puntero (mouse + touch unificados).
+ * - Renderizar la habitación procedimental (fondo, zócalo y suelo).
+ * - Gestionar la mascota y los muebles colocados con z-sorting automático.
+ * - Escalar el lienzo manteniendo la resolución virtual fija (800x600).
+ * - Abstraer los eventos de puntero (mouse + touch unificados) y arrastre de muebles.
  */
 export class PixiGameEngine {
   private app: Application | null = null;
   private container: HTMLElement | null = null;
+  private roomView: RoomView | null = null;
   private petView: PetView | null = null;
+  private readonly furnitureViews = new Map<string, FurnitureView>();
+
   private currentScale = 1;
+  private decoratingMode = false;
+  private selectedFurnitureId: string | null = null;
+
   private petClickHandler: (() => void) | null = null;
+  private furnitureMovedHandler: ((itemId: string, position: { x: number; y: number }) => void) | null = null;
+  private furnitureSelectedHandler: ((itemId: string | null) => void) | null = null;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
 
   /** Indica si el motor está inicializado y listo para renderizar. */
@@ -48,11 +59,47 @@ export class PixiGameEngine {
     return this.petView;
   }
 
+  /** Referencia a la capa de fondo de la habitación. */
+  get room(): RoomView | null {
+    return this.roomView;
+  }
+
+  /** Lista de vistas de muebles colocados en la habitación. */
+  get furniture(): readonly FurnitureView[] {
+    return Array.from(this.furnitureViews.values());
+  }
+
+  /** Indica si el modo decoración está activo. */
+  get isDecorating(): boolean {
+    return this.decoratingMode;
+  }
+
+  /** Identificador del mueble actualmente seleccionado o null. */
+  get selectedFurniture(): string | null {
+    return this.selectedFurnitureId;
+  }
+
   /**
    * Configura el callback al hacer clic o tocar sobre la mascota.
    */
   setPetClickHandler(handler: (() => void) | null): void {
     this.petClickHandler = handler;
+  }
+
+  /**
+   * Configura el callback al soltar un mueble tras ser arrastrado.
+   */
+  setFurnitureMovedHandler(
+    handler: ((itemId: string, position: { x: number; y: number }) => void) | null
+  ): void {
+    this.furnitureMovedHandler = handler;
+  }
+
+  /**
+   * Configura el callback al seleccionar un mueble en el escenario.
+   */
+  setFurnitureSelectedHandler(handler: ((itemId: string | null) => void) | null): void {
+    this.furnitureSelectedHandler = handler;
   }
 
   /**
@@ -74,10 +121,13 @@ export class PixiGameEngine {
       height: VIRTUAL_HEIGHT,
       resolution: window.devicePixelRatio || 1,
       autoDensity: true,
-      backgroundColor: 0x87CEEB, // Cielo azul claro — fondo por defecto del juego
+      backgroundColor: 0x87ceeb, // Cielo azul claro — fondo por defecto
     });
 
     container.appendChild(this.app.canvas);
+
+    // Habilitar ordenamiento automático de profundidad por zIndex en el escenario
+    this.app.stage.sortableChildren = true;
 
     // Configura interactividad en el stage para capturar eventos de puntero
     this.app.stage.eventMode = 'static';
@@ -87,7 +137,12 @@ export class PixiGameEngine {
 
     this.setupPointerEvents();
 
-    // Inicializa la mascota centrada en el escenario virtual por defecto (T-04)
+    // 1. Capa de fondo de la habitación (pared, zócalo y suelo) con zIndex muy bajo
+    this.roomView = new RoomView();
+    this.roomView.zIndex = -10000;
+    this.app.stage.addChild(this.roomView);
+
+    // 2. Inicializa la mascota centrada en el escenario virtual por defecto (T-04)
     this.spawnPet();
 
     // Ajuste inicial al tamaño del contenedor
@@ -118,19 +173,27 @@ export class PixiGameEngine {
     if (this.petView) {
       this.petView.updateAppearance(appearance, clothes);
       this.petView.setPosition(position.x, position.y);
+      this.petView.zIndex = Math.round(position.y + 45);
+      this.sortWorldDepth();
       return this.petView;
     }
 
     this.petView = new PetView(appearance, clothes);
     this.petView.setPosition(position.x, position.y);
+    this.petView.zIndex = Math.round(position.y + 45);
     this.petView.eventMode = 'static';
     this.petView.cursor = 'pointer';
     this.petView.on('pointerdown', (event) => {
+      // En modo decoración se prioriza la manipulación de la sala
+      if (this.decoratingMode) {
+        return;
+      }
       event.stopPropagation();
       this.petClickHandler?.();
     });
     this.petView.startIdleAnimation();
     this.app.stage.addChild(this.petView);
+    this.sortWorldDepth();
     return this.petView;
   }
 
@@ -146,6 +209,99 @@ export class PixiGameEngine {
       return;
     }
     this.petView?.updateAppearance(appearance, clothes);
+  }
+
+  /**
+   * Sincroniza la lista de muebles colocados en la habitación con el estado del juego.
+   */
+  syncRoom(room?: Room | null): void {
+    if (!this.app || !room) {
+      return;
+    }
+
+    const currentItemIds = new Set(room.placedItems.map((item) => item.itemId));
+
+    // 1. Eliminar muebles retirados
+    for (const [id, view] of this.furnitureViews.entries()) {
+      if (!currentItemIds.has(id)) {
+        this.app.stage.removeChild(view);
+        view.destroy();
+        this.furnitureViews.delete(id);
+      }
+    }
+
+    // 2. Crear nuevos muebles o sincronizar existentes
+    for (const placedItem of room.placedItems) {
+      const existingView = this.furnitureViews.get(placedItem.itemId);
+
+      if (existingView) {
+        // No sobrescribir posición si el usuario lo está arrastrando en este instante
+        if (!existingView.dragging) {
+          existingView.setPosition(placedItem.x, placedItem.y);
+        }
+      } else {
+        const newView = new FurnitureView(
+          placedItem.itemId,
+          placedItem.x,
+          placedItem.y
+        );
+        newView.setDecoratingMode(this.decoratingMode);
+        newView.setSelected(this.selectedFurnitureId === placedItem.itemId);
+
+        newView.setOnMoveEnd((pos) => {
+          this.furnitureMovedHandler?.(placedItem.itemId, pos);
+        });
+
+        newView.setOnSelect(() => {
+          this.selectedFurnitureId = placedItem.itemId;
+          this.furnitureSelectedHandler?.(placedItem.itemId);
+        });
+
+        newView.setOnDepthChange(() => {
+          this.sortWorldDepth();
+        });
+
+        this.app.stage.addChild(newView);
+        this.furnitureViews.set(placedItem.itemId, newView);
+      }
+    }
+
+    this.sortWorldDepth();
+  }
+
+  /**
+   * Activa o desactiva el modo de decoración.
+   * Permite mover muebles arrastrándolos y visualizarlos con indicadores de selección.
+   */
+  setDecoratingMode(enabled: boolean): void {
+    this.decoratingMode = enabled;
+    for (const view of this.furnitureViews.values()) {
+      view.setDecoratingMode(enabled);
+    }
+    if (!enabled) {
+      this.selectFurniture(null);
+    }
+  }
+
+  /**
+   * Selecciona un mueble específico o deselecciona todos con null.
+   */
+  selectFurniture(itemId: string | null): void {
+    this.selectedFurnitureId = itemId;
+    for (const [id, view] of this.furnitureViews.entries()) {
+      view.setSelected(id === itemId);
+    }
+    this.furnitureSelectedHandler?.(itemId);
+  }
+
+  /**
+   * Ordena los nodos hijos del escenario por zIndex para mantener profundidad correcta.
+   */
+  sortWorldDepth(): void {
+    if (!this.app) {
+      return;
+    }
+    this.app.stage.sortChildren();
   }
 
   /**
@@ -196,6 +352,16 @@ export class PixiGameEngine {
       return;
     }
 
+    for (const view of this.furnitureViews.values()) {
+      view.destroy();
+    }
+    this.furnitureViews.clear();
+
+    if (this.roomView) {
+      this.roomView.destroy();
+      this.roomView = null;
+    }
+
     if (this.petView) {
       this.petView.destroy();
       this.petView = null;
@@ -203,6 +369,8 @@ export class PixiGameEngine {
 
     this.pointerHandlers.clear();
     this.petClickHandler = null;
+    this.furnitureMovedHandler = null;
+    this.furnitureSelectedHandler = null;
 
     this.app.destroy(true, { children: true });
     this.app = null;

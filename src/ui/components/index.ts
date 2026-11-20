@@ -9,3 +9,5 @@ export { CareActions } from './CareActions';
 export type { CareActionsProps } from './CareActions';
 export { FoodSelectorModal } from './FoodSelectorModal';
 export type { FoodSelectorModalProps } from './FoodSelectorModal';
+export { DecorationPanel } from './DecorationPanel';
+export type { DecorationPanelProps } from './DecorationPanel';

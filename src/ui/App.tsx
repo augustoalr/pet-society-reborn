@@ -7,6 +7,7 @@ import {
   NeedsHUD,
   CareActions,
   FoodSelectorModal,
+  DecorationPanel,
 } from './components';
 
 /**
@@ -14,10 +15,13 @@ import {
  *
  * Estructura de la interfaz:
  * - HUD superior: Muestra estado vital de la mascota (Hambre, Higiene, Energía, Felicidad) y billetera.
- * - Lienzo de juego (PixiJS): Mascota procedural responsive con detección de clics directos para acariciar.
+ * - Lienzo de juego (PixiJS): Habitación procedimental 2D, muebles interactivos y mascota por capas.
  * - Barra flotante de acciones rápidas de cuidado: Alimentar, Jabón y Acariciar.
  * - Modal de selección de comida del inventario.
- * - Panel inferior con selector de modo (Cuidados / Personalizador de aspecto de T-04).
+ * - Panel inferior con selector de modo:
+ *   - 'care': Cuidados rápidos.
+ *   - 'customize': Personalizador de aspecto y ropa (T-04).
+ *   - 'decorate': Modo Decoración para colocar y reacomodar muebles en la sala (T-07).
  */
 export const App: React.FC = () => {
   const {
@@ -29,10 +33,14 @@ export const App: React.FC = () => {
     pet,
     updateAppearance,
     updateClothes,
+    placeFurniture,
+    moveFurniture,
+    removeFurniture,
   } = usePetCare();
 
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
-  const [activeBottomTab, setActiveBottomTab] = useState<'care' | 'customize'>('care');
+  const [activeBottomTab, setActiveBottomTab] = useState<'care' | 'customize' | 'decorate'>('care');
+  const [selectedFurnitureId, setSelectedFurnitureId] = useState<string | null>(null);
 
   if (isLoading || !gameState) {
     return (
@@ -54,7 +62,7 @@ export const App: React.FC = () => {
     );
   }
 
-  const { pet: currentPet, inventory, wallet } = gameState;
+  const { pet: currentPet, inventory, wallet, room } = gameState;
   const foodCount = inventory.items
     .filter((item) => item.category === 'food')
     .reduce((total, item) => total + item.quantity, 0);
@@ -95,7 +103,10 @@ export const App: React.FC = () => {
         <div style={{ display: 'flex', gap: theme.spacing.xs }}>
           <button
             type="button"
-            onClick={() => setActiveBottomTab('care')}
+            onClick={() => {
+              setActiveBottomTab('care');
+              setSelectedFurnitureId(null);
+            }}
             style={{
               backgroundColor:
                 activeBottomTab === 'care'
@@ -114,7 +125,10 @@ export const App: React.FC = () => {
           </button>
           <button
             type="button"
-            onClick={() => setActiveBottomTab('customize')}
+            onClick={() => {
+              setActiveBottomTab('customize');
+              setSelectedFurnitureId(null);
+            }}
             style={{
               backgroundColor:
                 activeBottomTab === 'customize'
@@ -130,6 +144,29 @@ export const App: React.FC = () => {
             }}
           >
             Personalizar
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveBottomTab('decorate')}
+            style={{
+              backgroundColor:
+                activeBottomTab === 'decorate'
+                  ? theme.colors.primaryDark
+                  : 'transparent',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: theme.borderRadius.small,
+              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <span>🛋️</span>
+            <span>Decorar</span>
           </button>
         </div>
       </header>
@@ -162,8 +199,59 @@ export const App: React.FC = () => {
         <GameCanvas
           appearance={currentPet.appearance}
           clothes={currentPet.clothes}
+          room={room}
+          isDecorating={activeBottomTab === 'decorate'}
+          selectedFurnitureId={selectedFurnitureId}
           onPetClick={pet}
+          onFurnitureMove={(itemId, newPos) => {
+            moveFurniture(itemId, newPos);
+          }}
+          onFurnitureSelect={setSelectedFurnitureId}
         />
+
+        {/* Indicador flotante en modo decoración */}
+        {activeBottomTab === 'decorate' && (
+          <div
+            style={{
+              position: 'absolute',
+              top: theme.spacing.small,
+              right: theme.spacing.small,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              color: '#FFFFFF',
+              padding: `${theme.spacing.xs} ${theme.spacing.medium}`,
+              borderRadius: theme.borderRadius.pill,
+              fontFamily: 'sans-serif',
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: theme.spacing.small,
+              zIndex: 10,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            }}
+          >
+            <span>🛋️ Modo Decoración Activo</span>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveBottomTab('care');
+                setSelectedFurnitureId(null);
+              }}
+              style={{
+                backgroundColor: theme.colors.primary,
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: theme.borderRadius.small,
+                padding: '2px 8px',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              Listo ✓
+            </button>
+          </div>
+        )}
 
         {/* Notificación flotante de feedback (toast) */}
         {feedbackMessage && (
@@ -202,7 +290,7 @@ export const App: React.FC = () => {
           padding: theme.spacing.small,
         }}
       >
-        {activeBottomTab === 'care' ? (
+        {activeBottomTab === 'care' && (
           <div style={{ padding: `${theme.spacing.xs} 0` }}>
             <CareActions
               onOpenFoodModal={() => setIsFoodModalOpen(true)}
@@ -211,12 +299,32 @@ export const App: React.FC = () => {
               foodCount={foodCount}
             />
           </div>
-        ) : (
+        )}
+
+        {activeBottomTab === 'customize' && (
           <PetCustomizer
             appearance={currentPet.appearance}
             onChangeAppearance={updateAppearance}
             clothes={currentPet.clothes ?? {}}
             onChangeClothes={updateClothes}
+          />
+        )}
+
+        {activeBottomTab === 'decorate' && (
+          <DecorationPanel
+            inventory={inventory}
+            room={room}
+            selectedItemId={selectedFurnitureId}
+            onPlaceItem={(itemId) => {
+              placeFurniture(itemId);
+            }}
+            onRemoveItem={(itemId) => {
+              if (selectedFurnitureId === itemId) {
+                setSelectedFurnitureId(null);
+              }
+              removeFurniture(itemId);
+            }}
+            onSelectPlacedItem={setSelectedFurnitureId}
           />
         )}
       </footer>
