@@ -72,3 +72,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Renderizado por capas con ordenamiento de profundidad (Y-sorting) y manipulación espacial acotada (Spatial Clamping).
 - **Por qué se hizo así:** En juegos con perspectiva isométrica o 2.5D, los objetos más cercanos al borde inferior de la pantalla deben dibujarse por delante de los más lejanos para crear una ilusión de volumen tridimensional correcta. Además, acotar las coordenadas en funciones matemáticas puras independientes de PixiJS previene que los muebles se salgan del lienzo ante eventos táctiles erráticos.
 - **Qué aprendí:** Separar la geometría matemática de la sala (`roomLogic.ts`) del renderizado en PixiJS (`RoomView` / `FurnitureView`) permite comprobar las restricciones físicas de decoración con pruebas unitarias instantáneas sin montar un lienzo WebGL real.
+
+---
+
+### T-08: Tienda de Ítems (Comida, Ropa, Muebles)
+- **Concepto clave:** Composición de transacciones financieras y acumulación inmutable de inventario.
+- **Por qué se hizo así:** Separar el catálogo comercial de las reglas de adquisición permite agregar o modificar precios y productos sin tocar el motor de compras (`shopLogic.ts`). Al procesar una compra, coordinar la deducción de saldo y la inserción/acumulación en el inventario dentro de una sola mutación atómica en `usePetCare` previene la pérdida de ítems o monedas en caso de cierre intempestivo de la aplicación.
+- **Qué aprendí:** En la arquitectura de videojuegos, los tests de integración cruzada (como `shopIntegration.test.ts`) son esenciales para verificar que un ítem comprado en la tienda impacta de inmediato en los otros subsistemas (alimentar a la mascota o colocar el mueble recién adquirido en la habitación) sin estados intermedios inconsistentes.
