@@ -62,3 +62,22 @@ export {
 } from './room';
 export type { GameState } from './game';
 export { createDefaultGameState } from './game';
+
+export type {
+  ShopCategory,
+  ShopItem,
+  ShopErrorCode,
+  ProcessPurchaseResult,
+} from './shop';
+
+export {
+  SHOP_CATALOG,
+  getShopItemById,
+  getShopItemsByCategory,
+  validateQuantity,
+  calculateTotalCost,
+  canAffordShopItem,
+  addItemToInventory,
+  findShopItem,
+  processPurchase,
+} from './shop';

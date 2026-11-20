@@ -107,8 +107,11 @@ Leyenda de etiquetas:
 - **Dependencias:** T-05, T-06, T-07
 - **Objetivo:** Crear la interfaz de tienda donde el usuario puede navegar categorías, ver precios en Coins/Cash y comprar ítems que se agregan a su inventario.
 - **Criterios de Aceptación:**
-  1. La tienda lista los ítems disponibles con su precio y descripción.
-  2. Al comprar, se valida saldo, se descuentan monedas y se agrega el ítem al inventario del usuario.
+  1. La tienda lista los ítems disponibles con su precio y descripción en catálogo puro `src/domain/shop/` [CUMPLIDO].
+  2. Al comprar, se valida saldo, se descuentan monedas/cash y se agrega o acumula el ítem en el inventario del usuario [CUMPLIDO].
+  3. Lógica pura e inmutable en `shopLogic.ts` con prevención de fondos insuficientes, cantidades inválidas y desbordamiento numérico [CUMPLIDO].
+  4. Componente React accesible `ShopModal.tsx` con filtrado por pestañas ("Comida", "Ropa", "Muebles"), botones con validación de fondos y feedback interactivo [CUMPLIDO].
+  5. Integración atómica en `usePetCare` con guardado persistente en `GameStateRepository` [CUMPLIDO].
 
 ---
 
