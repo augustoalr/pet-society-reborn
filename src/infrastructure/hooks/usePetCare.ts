@@ -10,12 +10,23 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { GameState, InventoryItem, PetAppearance, PetClothes } from '../../domain';
+import type {
+  GameState,
+  InventoryItem,
+  PetAppearance,
+  PetClothes,
+  TransactionResult,
+  PurchaseCost,
+} from '../../domain';
 import {
   calculateNeedsDecay,
   feedPet,
   cleanPet,
   petAnimal,
+  creditCurrency,
+  debitCurrency,
+  canAfford,
+  purchase,
 } from '../../domain';
 import { GameStateRepository, LocalStorageAdapter } from '../storage';
 
@@ -40,6 +51,12 @@ export interface UsePetCareResult {
   readonly updateClothes: (clothes: PetClothes) => void;
   readonly resetGame: () => Promise<void>;
   readonly saveNow: () => Promise<void>;
+  readonly addCoins: (amount: number, description?: string) => TransactionResult;
+  readonly spendCoins: (amount: number, description?: string) => TransactionResult;
+  readonly addCash: (amount: number, description?: string) => TransactionResult;
+  readonly spendCash: (amount: number, description?: string) => TransactionResult;
+  readonly canAfford: (cost: PurchaseCost) => boolean;
+  readonly purchase: (cost: PurchaseCost, description?: string) => TransactionResult;
 }
 
 // Repositorio por defecto como singleton en runtime
@@ -351,6 +368,162 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     }
   }, [repository]);
 
+  // 10. Operaciones de economía inmutables y sincronizadas con persistencia (T-06)
+  const addCoins = useCallback(
+    (amount: number, description?: string): TransactionResult => {
+      if (!latestStateRef.current) {
+        return {
+          success: false,
+          wallet: { coins: 0, cash: 0 },
+          error: 'INVALID_AMOUNT',
+        };
+      }
+
+      const current = latestStateRef.current;
+      const result = creditCurrency(current.wallet, 'coins', amount, description);
+
+      if (result.success) {
+        const nextState: GameState = {
+          ...current,
+          wallet: result.wallet,
+          lastSavedTimestamp: Date.now(),
+        };
+        latestStateRef.current = nextState;
+        setGameState(nextState);
+        repository.saveGameState(nextState).catch(() => {});
+      }
+
+      return result;
+    },
+    [repository]
+  );
+
+  const spendCoins = useCallback(
+    (amount: number, description?: string): TransactionResult => {
+      if (!latestStateRef.current) {
+        return {
+          success: false,
+          wallet: { coins: 0, cash: 0 },
+          error: 'INSUFFICIENT_FUNDS',
+        };
+      }
+
+      const current = latestStateRef.current;
+      const result = debitCurrency(current.wallet, 'coins', amount, description);
+
+      if (result.success) {
+        const nextState: GameState = {
+          ...current,
+          wallet: result.wallet,
+          lastSavedTimestamp: Date.now(),
+        };
+        latestStateRef.current = nextState;
+        setGameState(nextState);
+        repository.saveGameState(nextState).catch(() => {});
+      }
+
+      return result;
+    },
+    [repository]
+  );
+
+  const addCash = useCallback(
+    (amount: number, description?: string): TransactionResult => {
+      if (!latestStateRef.current) {
+        return {
+          success: false,
+          wallet: { coins: 0, cash: 0 },
+          error: 'INVALID_AMOUNT',
+        };
+      }
+
+      const current = latestStateRef.current;
+      const result = creditCurrency(current.wallet, 'cash', amount, description);
+
+      if (result.success) {
+        const nextState: GameState = {
+          ...current,
+          wallet: result.wallet,
+          lastSavedTimestamp: Date.now(),
+        };
+        latestStateRef.current = nextState;
+        setGameState(nextState);
+        repository.saveGameState(nextState).catch(() => {});
+      }
+
+      return result;
+    },
+    [repository]
+  );
+
+  const spendCash = useCallback(
+    (amount: number, description?: string): TransactionResult => {
+      if (!latestStateRef.current) {
+        return {
+          success: false,
+          wallet: { coins: 0, cash: 0 },
+          error: 'INSUFFICIENT_FUNDS',
+        };
+      }
+
+      const current = latestStateRef.current;
+      const result = debitCurrency(current.wallet, 'cash', amount, description);
+
+      if (result.success) {
+        const nextState: GameState = {
+          ...current,
+          wallet: result.wallet,
+          lastSavedTimestamp: Date.now(),
+        };
+        latestStateRef.current = nextState;
+        setGameState(nextState);
+        repository.saveGameState(nextState).catch(() => {});
+      }
+
+      return result;
+    },
+    [repository]
+  );
+
+  const checkCanAfford = useCallback(
+    (cost: PurchaseCost): boolean => {
+      if (!latestStateRef.current) {
+        return false;
+      }
+      return canAfford(latestStateRef.current.wallet, cost);
+    },
+    []
+  );
+
+  const executePurchase = useCallback(
+    (cost: PurchaseCost, description?: string): TransactionResult => {
+      if (!latestStateRef.current) {
+        return {
+          success: false,
+          wallet: { coins: 0, cash: 0 },
+          error: 'INSUFFICIENT_FUNDS',
+        };
+      }
+
+      const current = latestStateRef.current;
+      const result = purchase(current.wallet, cost, description);
+
+      if (result.success && result.wallet !== current.wallet) {
+        const nextState: GameState = {
+          ...current,
+          wallet: result.wallet,
+          lastSavedTimestamp: Date.now(),
+        };
+        latestStateRef.current = nextState;
+        setGameState(nextState);
+        repository.saveGameState(nextState).catch(() => {});
+      }
+
+      return result;
+    },
+    [repository]
+  );
+
   return {
     gameState,
     isLoading,
@@ -363,5 +536,11 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     updateClothes,
     resetGame,
     saveNow,
+    addCoins,
+    spendCoins,
+    addCash,
+    spendCash,
+    canAfford: checkCanAfford,
+    purchase: executePurchase,
   };
 }
