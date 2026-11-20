@@ -56,4 +56,12 @@ export const theme = {
     pill: '9999px',
     round: '50%',
   },
+  transitions: {
+    fast: '0.15s ease',
+    normal: '0.25s ease',
+    slow: '0.4s ease',
+  },
+  typography: {
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  },
 } as const;
