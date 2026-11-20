@@ -79,3 +79,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Composición de transacciones financieras y acumulación inmutable de inventario.
 - **Por qué se hizo así:** Separar el catálogo comercial de las reglas de adquisición permite agregar o modificar precios y productos sin tocar el motor de compras (`shopLogic.ts`). Al procesar una compra, coordinar la deducción de saldo y la inserción/acumulación en el inventario dentro de una sola mutación atómica en `usePetCare` previene la pérdida de ítems o monedas en caso de cierre intempestivo de la aplicación.
 - **Qué aprendí:** En la arquitectura de videojuegos, los tests de integración cruzada (como `shopIntegration.test.ts`) son esenciales para verificar que un ítem comprado en la tienda impacta de inmediato en los otros subsistemas (alimentar a la mascota o colocar el mueble recién adquirido en la habitación) sin estados intermedios inconsistentes.
+
+---
+
+### T-09: Minijuego de Habilidad Clásico (Pelota en el Jardín / Malabares)
+- **Concepto clave:** Física continua desacoplada del renderizado y bucle de juego basado en Delta Time ($dt$).
+- **Por qué se hizo así:** Separar las ecuaciones de movimiento, gravedad y rebote en funciones matemáticas puras (`ballGameLogic.ts`) permite probar toda la física del juego de forma determinista y sin depender de un navegador WebGL. Además, multiplicar aceleraciones y velocidades por `deltaTimeSeconds` asegura que la pelota se mueva con idéntica fluidez a 30 FPS, 60 FPS o 144 FPS sin sufrir saltos erráticos ni atravesar paredes (anti-tunneling).
+- **Qué aprendí:** Vincular las recompensas del minijuego (monedas y felicidad) a la economía central y persistencia del juego mediante transacciones puras conecta mecánicas casuales con el bucle principal de retención del jugador.
