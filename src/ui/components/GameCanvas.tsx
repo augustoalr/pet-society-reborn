@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { PetAppearance, PetClothes } from '../../domain';
+import type { PetAppearance, PetClothes, Room } from '../../domain';
 import { PixiGameEngine } from '../../game';
 import { theme } from '../../styles';
 
@@ -15,8 +15,15 @@ type EngineStatus = 'loading' | 'ready' | 'error';
 export interface GameCanvasProps {
   readonly appearance?: PetAppearance;
   readonly clothes?: PetClothes | readonly string[];
+  readonly room?: Room;
+  readonly isDecorating?: boolean;
+  readonly selectedFurnitureId?: string | null;
   /** Callback al hacer clic o tocar sobre la mascota (para acariciarla). */
   readonly onPetClick?: () => void;
+  /** Callback al arrastrar y soltar un mueble a una nueva posición. */
+  readonly onFurnitureMove?: (itemId: string, newPosition: { x: number; y: number }) => void;
+  /** Callback al seleccionar un mueble en el escenario. */
+  readonly onFurnitureSelect?: (itemId: string | null) => void;
 }
 
 /**
@@ -27,13 +34,22 @@ export interface GameCanvasProps {
  * - Contener el canvas WebGL generado por PixiGameEngine.
  * - Observar cambios de tamaño del contenedor (ResizeObserver) y
  *   eventos de resize de ventana para mantener el escalado responsive.
- * - Mostrar un estado de carga mientras el motor se inicializa.
+ * - Sincronizar el escenario de la habitación, mascota y muebles colocados.
  * - Destruir limpiamente el motor al desmontar el componente.
  *
  * La UI es "tonta": no contiene lógica de juego, solo monta y conecta
  * el motor gráfico con el DOM (R-01: SoC).
  */
-export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes, onPetClick }) => {
+export const GameCanvas: React.FC<GameCanvasProps> = ({
+  appearance,
+  clothes,
+  room,
+  isDecorating,
+  selectedFurnitureId,
+  onPetClick,
+  onFurnitureMove,
+  onFurnitureSelect,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<PixiGameEngine | null>(null);
   const [status, setStatus] = useState<EngineStatus>('loading');
@@ -99,6 +115,39 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ appearance, clothes, onP
       engineRef.current.setPetClickHandler(onPetClick ?? null);
     }
   }, [onPetClick, status]);
+
+  // Sincronización de la habitación y muebles colocados
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current && room) {
+      engineRef.current.syncRoom(room);
+    }
+  }, [room, status]);
+
+  // Sincronización del modo de decoración
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.setDecoratingMode(Boolean(isDecorating));
+    }
+  }, [isDecorating, status]);
+
+  // Sincronización del mueble seleccionado
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.selectFurniture(selectedFurnitureId ?? null);
+    }
+  }, [selectedFurnitureId, status]);
+
+  // Callbacks de manipulación de muebles
+  useEffect(() => {
+    if (status === 'ready' && engineRef.current) {
+      engineRef.current.setFurnitureMovedHandler((itemId, pos) => {
+        onFurnitureMove?.(itemId, pos);
+      });
+      engineRef.current.setFurnitureSelectedHandler((itemId) => {
+        onFurnitureSelect?.(itemId);
+      });
+    }
+  }, [onFurnitureMove, onFurnitureSelect, status]);
 
   return (
     <div

@@ -27,6 +27,10 @@ import {
   debitCurrency,
   canAfford,
   purchase,
+  placeFurnitureFromInventory,
+  moveItemInRoom,
+  returnFurnitureToInventory,
+  DEFAULT_ROOM_BOUNDS,
 } from '../../domain';
 import { GameStateRepository, LocalStorageAdapter } from '../storage';
 
@@ -57,6 +61,9 @@ export interface UsePetCareResult {
   readonly spendCash: (amount: number, description?: string) => TransactionResult;
   readonly canAfford: (cost: PurchaseCost) => boolean;
   readonly purchase: (cost: PurchaseCost, description?: string) => TransactionResult;
+  readonly placeFurniture: (itemId: string, position?: { x: number; y: number }) => boolean;
+  readonly moveFurniture: (itemId: string, newPosition: { x: number; y: number }) => boolean;
+  readonly removeFurniture: (itemId: string) => boolean;
 }
 
 // Repositorio por defecto como singleton en runtime
@@ -524,6 +531,103 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     [repository]
   );
 
+  // 11. Gestión de muebles y decoración inmutable (T-07)
+  const placeFurniture = useCallback(
+    (itemId: string, position?: { x: number; y: number }): boolean => {
+      if (!latestStateRef.current) return false;
+
+      const current = latestStateRef.current;
+      const defaultPos = position ?? { x: 400, y: 380 };
+
+      const result = placeFurnitureFromInventory(
+        current.room,
+        current.inventory,
+        itemId,
+        defaultPos,
+        DEFAULT_ROOM_BOUNDS
+      );
+
+      if (!result.success) {
+        return false;
+      }
+
+      const nextState: GameState = {
+        ...current,
+        room: result.room,
+        inventory: result.inventory,
+        lastSavedTimestamp: Date.now(),
+      };
+
+      latestStateRef.current = nextState;
+      setGameState(nextState);
+      repository.saveGameState(nextState).catch(() => {});
+      triggerFeedback('¡Mueble colocado en la habitación! 🛋️');
+      return true;
+    },
+    [repository, triggerFeedback]
+  );
+
+  const moveFurniture = useCallback(
+    (itemId: string, newPosition: { x: number; y: number }): boolean => {
+      if (!latestStateRef.current) return false;
+
+      const current = latestStateRef.current;
+      const updatedRoom = moveItemInRoom(
+        current.room,
+        itemId,
+        newPosition,
+        DEFAULT_ROOM_BOUNDS
+      );
+
+      if (updatedRoom === current.room) {
+        return false;
+      }
+
+      const nextState: GameState = {
+        ...current,
+        room: updatedRoom,
+        lastSavedTimestamp: Date.now(),
+      };
+
+      latestStateRef.current = nextState;
+      setGameState(nextState);
+      repository.saveGameState(nextState).catch(() => {});
+      return true;
+    },
+    [repository]
+  );
+
+  const removeFurniture = useCallback(
+    (itemId: string): boolean => {
+      if (!latestStateRef.current) return false;
+
+      const current = latestStateRef.current;
+      const result = returnFurnitureToInventory(
+        current.room,
+        current.inventory,
+        itemId
+      );
+
+      if (!result.success) {
+        return false;
+      }
+
+      const nextState: GameState = {
+        ...current,
+        room: result.room,
+        inventory: result.inventory,
+        lastSavedTimestamp: Date.now(),
+      };
+
+      latestStateRef.current = nextState;
+      setGameState(nextState);
+      repository.saveGameState(nextState).catch(() => {});
+      triggerFeedback('¡Mueble guardado en tu baúl! 📦');
+      return true;
+    },
+    [repository, triggerFeedback]
+  );
+
   return {
     gameState,
     isLoading,
@@ -542,5 +646,8 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     spendCash,
     canAfford: checkCanAfford,
     purchase: executePurchase,
+    placeFurniture,
+    moveFurniture,
+    removeFurniture,
   };
 }

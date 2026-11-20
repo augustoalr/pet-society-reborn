@@ -23,3 +23,17 @@ export type {
   PetColorPalette,
   FacialFeatureColors,
 } from './pet';
+
+export {
+  RoomView,
+  FurnitureView,
+  BASE_FURNITURE_CATALOG,
+  getFurnitureDefinition,
+  drawBed,
+  drawTable,
+  drawLamp,
+  drawPlant,
+  drawFurnitureGraphics,
+} from './room';
+export type { RoomLayoutConfig, FurnitureDefinition, FurnitureMovedEvent } from './room';
+

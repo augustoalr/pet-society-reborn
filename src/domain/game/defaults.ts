@@ -51,6 +51,30 @@ export function createDefaultGameState(): GameState {
           quantity: 2,
           nutrition: 35,
         },
+        {
+          id: 'furniture-bed',
+          name: 'Cama Cómoda',
+          category: 'furniture',
+          quantity: 1,
+        },
+        {
+          id: 'furniture-table',
+          name: 'Mesa de Madera',
+          category: 'furniture',
+          quantity: 1,
+        },
+        {
+          id: 'furniture-lamp',
+          name: 'Lámpara de Pie',
+          category: 'furniture',
+          quantity: 1,
+        },
+        {
+          id: 'furniture-plant',
+          name: 'Planta de Interior',
+          category: 'furniture',
+          quantity: 1,
+        },
       ],
     },
     room: {

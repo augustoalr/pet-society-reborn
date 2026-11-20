@@ -48,6 +48,17 @@ export {
   purchase,
 } from './economy';
 export type { InventoryItem, Inventory, ItemCategory } from './inventory';
-export type { Room, PlacedItem } from './room';
+export type { Room, PlacedItem, Bounds } from './room';
+export {
+  DEFAULT_ROOM_BOUNDS,
+  DEFAULT_FLOOR_BOUNDS,
+  clampToBounds,
+  isWithinBounds,
+  placeItemInRoom,
+  moveItemInRoom,
+  removeItemFromRoom,
+  placeFurnitureFromInventory,
+  returnFurnitureToInventory,
+} from './room';
 export type { GameState } from './game';
 export { createDefaultGameState } from './game';
