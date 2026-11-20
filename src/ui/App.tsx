@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { MinigameStatus } from '../domain';
-import { usePetCare } from '../infrastructure';
+import type { MinigameStatus, InventoryItem } from '../domain';
+import { usePetCare, soundService } from '../infrastructure';
 import { theme } from '../styles';
 import {
   GameCanvas,
@@ -48,6 +48,43 @@ export const App: React.FC = () => {
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const [activeBottomTab, setActiveBottomTab] = useState<'care' | 'customize' | 'decorate'>('care');
   const [selectedFurnitureId, setSelectedFurnitureId] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(() => soundService.isMuted);
+
+  // Handlers con feedback sonoro procedimental (T-10)
+  const handleToggleMute = () => {
+    void soundService.resumeContext();
+    const nextMuted = soundService.toggleMute();
+    setIsMuted(nextMuted);
+  };
+
+  const handleFeed = (item: InventoryItem) => {
+    void soundService.resumeContext();
+    const success = feed(item);
+    if (success) {
+      soundService.playFeed();
+    }
+  };
+
+  const handleClean = (soapEfficiency?: number) => {
+    void soundService.resumeContext();
+    clean(soapEfficiency);
+    soundService.playClean();
+  };
+
+  const handlePet = () => {
+    void soundService.resumeContext();
+    pet();
+    soundService.playPet();
+  };
+
+  const handleBuyItem = (shopItemId: string, quantity?: number) => {
+    void soundService.resumeContext();
+    const result = buyItem(shopItemId, quantity);
+    if (result.success) {
+      soundService.playBuy();
+    }
+    return result;
+  };
 
   // Estados reactivos del minijuego de pelota en el jardín (T-09)
   const [minigameScore, setMinigameScore] = useState(0);
@@ -72,7 +109,7 @@ export const App: React.FC = () => {
           justifyContent: 'center',
           backgroundColor: theme.colors.gameContainerBackground,
           color: theme.colors.loadingText,
-          fontFamily: 'sans-serif',
+          fontFamily: theme.typography.fontFamily,
           fontSize: '1.2rem',
         }}
       >
@@ -110,7 +147,7 @@ export const App: React.FC = () => {
           padding: `0 ${theme.spacing.medium}`,
           backgroundColor: theme.colors.primary,
           color: '#FFFFFF',
-          fontFamily: 'sans-serif',
+          fontFamily: theme.typography.fontFamily,
           fontWeight: 'bold',
           fontSize: '1.1rem',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -146,6 +183,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               onClick={() => {
+                void soundService.resumeContext();
                 setViewMode('minigame');
                 setMinigameStatus('idle');
                 setMinigameScore(0);
@@ -166,6 +204,7 @@ export const App: React.FC = () => {
                 alignItems: 'center',
                 gap: '4px',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                transition: `background-color ${theme.transitions.fast}, transform ${theme.transitions.fast}`,
               }}
             >
               <span aria-hidden="true">⚽</span>
@@ -174,7 +213,10 @@ export const App: React.FC = () => {
           ) : (
             <button
               type="button"
-              onClick={() => setViewMode('room')}
+              onClick={() => {
+                void soundService.resumeContext();
+                setViewMode('room');
+              }}
               aria-label="Volver a la Habitación"
               style={{
                 backgroundColor: theme.colors.primaryDark,
@@ -189,12 +231,39 @@ export const App: React.FC = () => {
                 alignItems: 'center',
                 gap: '4px',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                transition: `background-color ${theme.transitions.fast}, transform ${theme.transitions.fast}`,
               }}
             >
               <span aria-hidden="true">🏠</span>
               <span>Habitación</span>
             </button>
           )}
+
+          {/* Botón de control de Audio/Silencio (T-10) */}
+          <button
+            type="button"
+            onClick={handleToggleMute}
+            aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
+            title={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
+            style={{
+              backgroundColor: isMuted ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.25)',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: theme.borderRadius.small,
+              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              transition: `background-color ${theme.transitions.fast}, transform ${theme.transitions.fast}`,
+            }}
+          >
+            <span aria-hidden="true">{isMuted ? '🔇' : '🔊'}</span>
+            <span>{isMuted ? 'Mudo' : 'Audio'}</span>
+          </button>
         </div>
 
         {/* Pestañas de navegación según el modo activo */}
@@ -306,6 +375,7 @@ export const App: React.FC = () => {
           flex: 1,
           minHeight: 0,
           position: 'relative',
+          transition: `opacity ${theme.transitions.normal}`,
         }}
       >
         <GameCanvas
@@ -316,17 +386,21 @@ export const App: React.FC = () => {
           restartMinigameSignal={restartSignal}
           isDecorating={viewMode === 'room' && activeBottomTab === 'decorate'}
           selectedFurnitureId={selectedFurnitureId}
-          onPetClick={pet}
+          onPetClick={handlePet}
           onFurnitureMove={(itemId, newPos) => {
             moveFurniture(itemId, newPos);
           }}
           onFurnitureSelect={setSelectedFurnitureId}
+          onMinigameHit={() => {
+            soundService.playBallHit();
+          }}
           onMinigameScoreChange={(score, combo) => {
             setMinigameScore(score);
             setMinigameCombo(combo);
             setMinigameStatus('playing');
           }}
           onMinigameGameOver={(finalScore) => {
+            soundService.playGameOver();
             setMinigameStatus('game_over');
             const reward = recordMinigameResult(finalScore);
             setLastMinigameReward({
@@ -449,8 +523,8 @@ export const App: React.FC = () => {
           <div style={{ padding: `${theme.spacing.xs} 0` }}>
             <CareActions
               onOpenFoodModal={() => setIsFoodModalOpen(true)}
-              onClean={() => clean()}
-              onPet={pet}
+              onClean={() => handleClean()}
+              onPet={handlePet}
               foodCount={foodCount}
             />
           </div>
@@ -505,7 +579,7 @@ export const App: React.FC = () => {
         isOpen={isFoodModalOpen}
         inventory={inventory}
         onClose={() => setIsFoodModalOpen(false)}
-        onSelectFood={(item) => feed(item)}
+        onSelectFood={(item) => handleFeed(item)}
         onOpenShop={() => setIsShopModalOpen(true)}
       />
 
@@ -514,7 +588,7 @@ export const App: React.FC = () => {
         isOpen={isShopModalOpen}
         wallet={wallet}
         onClose={() => setIsShopModalOpen(false)}
-        onBuyItem={buyItem}
+        onBuyItem={handleBuyItem}
       />
     </div>
   );
