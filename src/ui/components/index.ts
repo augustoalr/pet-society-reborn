@@ -11,3 +11,5 @@ export { FoodSelectorModal } from './FoodSelectorModal';
 export type { FoodSelectorModalProps } from './FoodSelectorModal';
 export { DecorationPanel } from './DecorationPanel';
 export type { DecorationPanelProps } from './DecorationPanel';
+export { ShopModal } from './ShopModal';
+export type { ShopModalProps, ShopFilterCategory } from './ShopModal';

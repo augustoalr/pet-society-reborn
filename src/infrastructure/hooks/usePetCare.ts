@@ -31,6 +31,7 @@ import {
   moveItemInRoom,
   returnFurnitureToInventory,
   DEFAULT_ROOM_BOUNDS,
+  processPurchase,
 } from '../../domain';
 import { GameStateRepository, LocalStorageAdapter } from '../storage';
 
@@ -64,6 +65,10 @@ export interface UsePetCareResult {
   readonly placeFurniture: (itemId: string, position?: { x: number; y: number }) => boolean;
   readonly moveFurniture: (itemId: string, newPosition: { x: number; y: number }) => boolean;
   readonly removeFurniture: (itemId: string) => boolean;
+  readonly buyItem: (
+    shopItemId: string,
+    quantity?: number
+  ) => { success: boolean; error?: string };
 }
 
 // Repositorio por defecto como singleton en runtime
@@ -628,6 +633,56 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     [repository, triggerFeedback]
   );
 
+  // 12. Acción de compra en la tienda de ítems (T-08)
+  const buyItem = useCallback(
+    (
+      shopItemId: string,
+      quantity: number = 1
+    ): { success: boolean; error?: string } => {
+      if (!latestStateRef.current) {
+        return { success: false, error: 'NO_STATE' };
+      }
+
+      const current = latestStateRef.current;
+      const result = processPurchase(
+        current.wallet,
+        current.inventory,
+        shopItemId,
+        quantity
+      );
+
+      if (!result.success) {
+        if (result.error === 'INSUFFICIENT_FUNDS') {
+          triggerFeedback('¡No tienes fondos suficientes para esta compra! 🪙');
+        } else if (result.error === 'ITEM_NOT_FOUND') {
+          triggerFeedback('Ítem no disponible en la tienda.');
+        } else {
+          triggerFeedback('No se pudo completar la compra.');
+        }
+        return { success: false, error: result.error };
+      }
+
+      const nextState: GameState = {
+        ...current,
+        wallet: result.updatedWallet,
+        inventory: result.updatedInventory,
+        lastSavedTimestamp: Date.now(),
+      };
+
+      latestStateRef.current = nextState;
+      setGameState(nextState);
+      repository.saveGameState(nextState).catch(() => {});
+
+      const itemPurchased = result.purchasedItem;
+      const itemName = itemPurchased ? itemPurchased.name : 'ítem';
+      const qtyText = quantity > 1 ? `${quantity}x ` : '';
+      triggerFeedback(`¡Compraste ${qtyText}${itemName}! Guardado en tu inventario 🎉`);
+
+      return { success: true };
+    },
+    [repository, triggerFeedback]
+  );
+
   return {
     gameState,
     isLoading,
@@ -649,5 +704,6 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     placeFurniture,
     moveFurniture,
     removeFurniture,
+    buyItem,
   };
 }

@@ -62,7 +62,8 @@ src/
 ├── domain/            # Modelos de datos puros y reglas de negocio
 │   ├── pet/           # Tipos de mascota, cálculo de estados
 │   ├── inventory/     # Items, ropa, muebles, categorías
-│   └── economy/       # Reglas de compras, billetera
+│   ├── economy/       # Reglas de compras, billetera
+│   └── shop/          # Catálogo comercial, lógica inmutable de compras y validaciones
 ├── infrastructure/    # Adaptadores a librerías y almacenamiento
 │   ├── storage/       # IStorageService, LocalStorageAdapter, SupabaseAdapter
 │   └── audio/         # Wrapper de audio

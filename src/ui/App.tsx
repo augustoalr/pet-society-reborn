@@ -8,6 +8,7 @@ import {
   CareActions,
   FoodSelectorModal,
   DecorationPanel,
+  ShopModal,
 } from './components';
 
 /**
@@ -36,9 +37,11 @@ export const App: React.FC = () => {
     placeFurniture,
     moveFurniture,
     removeFurniture,
+    buyItem,
   } = usePetCare();
 
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const [activeBottomTab, setActiveBottomTab] = useState<'care' | 'customize' | 'decorate'>('care');
   const [selectedFurnitureId, setSelectedFurnitureId] = useState<string | null>(null);
 
@@ -97,7 +100,31 @@ export const App: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         }}
       >
-        <span>Pet Society</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.medium }}>
+          <span>Pet Society</span>
+          <button
+            type="button"
+            onClick={() => setIsShopModalOpen(true)}
+            aria-label="Abrir Tienda"
+            style={{
+              backgroundColor: theme.colors.accent,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: theme.borderRadius.small,
+              padding: `${theme.spacing.xs} ${theme.spacing.small}`,
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+            }}
+          >
+            <span aria-hidden="true">🏪</span>
+            <span>Tienda</span>
+          </button>
+        </div>
 
         {/* Pestañas de vista inferior */}
         <div style={{ display: 'flex', gap: theme.spacing.xs }}>
@@ -335,6 +362,15 @@ export const App: React.FC = () => {
         inventory={inventory}
         onClose={() => setIsFoodModalOpen(false)}
         onSelectFood={(item) => feed(item)}
+        onOpenShop={() => setIsShopModalOpen(true)}
+      />
+
+      {/* Modal de la tienda de ítems */}
+      <ShopModal
+        isOpen={isShopModalOpen}
+        wallet={wallet}
+        onClose={() => setIsShopModalOpen(false)}
+        onBuyItem={buyItem}
       />
     </div>
   );

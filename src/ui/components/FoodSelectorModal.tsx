@@ -8,6 +8,16 @@ export interface FoodSelectorModalProps {
   readonly inventory: Inventory;
   readonly onClose: () => void;
   readonly onSelectFood: (item: InventoryItem) => void;
+  readonly onOpenShop?: () => void;
+}
+
+function getFoodItemIcon(itemId: string): string {
+  if (itemId.includes('bread')) return '🍞';
+  if (itemId.includes('cookie')) return '🍪';
+  if (itemId.includes('sushi')) return '🍣';
+  if (itemId.includes('cake')) return '🍰';
+  if (itemId.includes('golden')) return '🌟';
+  return '🍎';
 }
 
 /**
@@ -18,6 +28,7 @@ export const FoodSelectorModal: React.FC<FoodSelectorModalProps> = ({
   inventory,
   onClose,
   onSelectFood,
+  onOpenShop,
 }) => {
   if (!isOpen) {
     return null;
@@ -131,14 +142,35 @@ export const FoodSelectorModal: React.FC<FoodSelectorModalProps> = ({
                 ¡Tu despensa está vacía!
               </p>
               <p style={{ margin: `${theme.spacing.xs} 0 0`, fontSize: '0.8rem' }}>
-                Visita la tienda más adelante para comprar más delicias.
+                Visita la tienda para comprar más delicias.
               </p>
+              {onOpenShop && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenShop();
+                  }}
+                  style={{
+                    marginTop: theme.spacing.medium,
+                    backgroundColor: theme.colors.primary,
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: theme.borderRadius.pill,
+                    padding: `${theme.spacing.xs} ${theme.spacing.medium}`,
+                    fontSize: '0.85rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Ir a la Tienda 🏪
+                </button>
+              )}
             </div>
           ) : (
             foodItems.map((food) => {
               const nutrition = food.nutrition ?? DEFAULT_FOOD_NUTRITION;
-              const isBread = food.id.includes('bread');
-              const icon = isBread ? '🍞' : '🍎';
+              const icon = getFoodItemIcon(food.id);
 
               return (
                 <div
