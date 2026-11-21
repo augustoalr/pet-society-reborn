@@ -93,3 +93,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Síntesis de sonido procedural vía Web Audio API y pruebas de integración de ciclo completo (E2E Game Loop).
 - **Por qué se hizo así:** Depender de archivos de audio externos (`.mp3` o `.wav`) suele provocar enlaces rotos, latencia de descarga o fallos de CORS en entornos web. Sintetizar tonos y ruidos con osciladores y envolventes ADSR garantiza carga instantánea, peso cero en assets y control total del volumen. Asimismo, una prueba E2E completa que atraviesa todos los subsistemas (Mascota $\rightarrow$ Cuidados $\rightarrow$ Minijuego $\rightarrow$ Billetera $\rightarrow$ Tienda $\rightarrow$ Habitación $\rightarrow$ Persistencia) asegura que el juego funciona como un todo armónico antes del lanzamiento.
 - **Qué aprendí:** Los navegadores bloquean el audio automático hasta el primer clic o toque del usuario; envolver el contexto de audio en un método defensivo `resumeAudioContext()` activado por cualquier interacción garantiza una experiencia sonora ininterrumpida sin lanzar advertencias en consola.
+
+---
+
+### T-11: Despliegue Continuo a GitHub Pages y Publicación de Demo Web
+- **Concepto clave:** Enrutamiento y base path condicional en compilación estática (Static Hosting Path Agnosticism).
+- **Por qué se hizo así:** Los sitios servidos bajo sub-rutas de dominio (como `usuario.github.io/proyecto/`) requieren que las referencias de scripts, CSS y assets usen una ruta base relativa o prefijada (`/proyecto/`). Configurar dinámicamente `base` en Vite según la presencia de variables de entorno (`GITHUB_PAGES` o `GITHUB_ACTIONS`) permite compilar tanto para la raíz en desarrollo local (`/`) como para GitHub Pages sin duplicar configuraciones ni alterar el código fuente.
+- **Qué aprendí:** El pipeline de GitHub Actions para Pages (`configure-pages`, `upload-pages-artifact`, `deploy-pages`) con permisos OIDC (`id-token: write`) permite despliegues automáticos seguros y reproducibles directamente desde el CI sin necesidad de gestionar tokens de acceso personales (PATs).
