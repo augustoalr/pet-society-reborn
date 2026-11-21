@@ -142,8 +142,9 @@ Leyenda de etiquetas:
 
 ### Sprint 5: Despliegue y Publicación Web
 
-#### T-11: Despliegue Continuo a GitHub Pages y Publicación de Demo Web [EN CURSO]
+#### T-11: Despliegue Continuo a GitHub Pages y Publicación de Demo Web [COMPLETADA]
 - **Dependencias:** T-10
+- **Merge:** Commit `48d05e3` en `main` (PR #30).
 - **Objetivo:** Configurar el pipeline automatizado de CI/CD para GitHub Pages y publicar la demo web pública oficial en `https://augustoalr.github.io/pet-society-reborn/`.
 - **Criterios de Aceptación:**
   1. Base path dinámico en `vite.config.ts`: `/pet-society-reborn/` en despliegues a Pages / CI y `/` en entorno local [CUMPLIDO].

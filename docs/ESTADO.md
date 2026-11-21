@@ -18,6 +18,7 @@
 | T-08 Tienda de Ítems | T-08 tienda-items | t-08-tienda-items | Local | #24 | Hecho | 2026-11-20 | 2026-11-20 (a78a252) | Catálogo por categorías (comida, ropa, muebles), validación de compra y feedback visual |
 | T-09 Minijuego de Pelota | T-09 minijuego-pelota | t-09-minijuego-pelota | Local | #26 | Hecho | 2026-11-20 | 2026-11-20 (8cef8f4) | Malabares de pelota en jardín exterior, física pura, combos, recompensas y HUD |
 | T-10 Pulido y Audio MVP | T-10 pulido-audio-mvp | t-10-pulido-audio-mvp | Local | #28 | Hecho | 2026-11-21 | 2026-11-21 (dfa60d5) | Audio procedural Web Audio API, persistencia de volumen, pulido de UI y validación E2E |
+| T-11 Despliegue GitHub Pages | T-11 deploy-github-pages | t-11-deploy-github-pages | Local | #30 | Hecho | 2026-11-21 | 2026-11-21 (48d05e3) | CI/CD GitHub Pages automatizado, base path dinámico en Vite y enlace demo en README |
 
 ## Conversaciones activas
 - Manager (fija)
