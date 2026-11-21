@@ -1,7 +1,8 @@
 # 🐾 Pet Society (Reborn)
 
 [![Author: Augusto](https://img.shields.io/badge/Author-Augusto-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/)
-[![Status: In_Development](https://img.shields.io/badge/Status-In_Development-orange)](#)
+[![Demo: Playable Online](https://img.shields.io/badge/Demo-Playable_Online-brightgreen?logo=github-pages&logoColor=white)](https://augustoalr.github.io/pet-society-reborn/)
+[![Status: MVP Completed](https://img.shields.io/badge/Status-MVP_Completed-success)](#)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PixiJS v8](https://img.shields.io/badge/PixiJS-v8-E72264?logo=pixijs&logoColor=white)](https://pixijs.com/)
@@ -48,9 +49,11 @@ Pet Society (Reborn) sigue principios rigurosos de **Clean Architecture** y **Se
 
 ## 🚀 Estado del Proyecto y Demo Web
 
-El juego se encuentra en **fase activa de desarrollo e ingeniería de pre-lanzamiento**, consolidando sus hitos de diseño de sistemas, renderizado vectorial y dinámicas de interacción.
+El MVP del juego ha sido completado con éxito, consolidando sus hitos de diseño de sistemas, renderizado vectorial procedimental, cuidados en tiempo real, decoración, minijuegos y economía.
 
-- 🌐 **Demo Jugable en la Web:** La versión jugable estará disponible próximamente en web para acceso público directo desde cualquier navegador moderno (escritorio y móvil), sin requerir descargas ni instalaciones.
+- 🎮 **Demo Jugable en la Web:** Accede y prueba la experiencia interactiva directamente desde cualquier navegador moderno (escritorio y móvil), sin descargas ni instalaciones:  
+  👉 **[Probar Demo Web Jugable](https://augustoalr.github.io/pet-society-reborn/)**
+- 🌐 **Despliegue Continuo:** La aplicación se compila y publica automáticamente a GitHub Pages en cada push a la rama `main`.
 - 🤝 **Contacto Profesional y Avances:** Te invitamos a seguir los avances del proyecto, explorar oportunidades o conectar profesionalmente con [Augusto en LinkedIn](https://www.linkedin.com/).
 
 ---
