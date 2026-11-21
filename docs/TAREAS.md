@@ -137,3 +137,16 @@ Leyenda de etiquetas:
   2. Flujo completo validado con suite E2E: Crear mascota -> Cuidar -> Jugar minijuego -> Ganar monedas -> Comprar ítem -> Decorar habitación -> Recargar página sin perder nada (`src/e2e/gameLoop.test.ts`) [CUMPLIDO].
   3. Integración de efectos de sonido en cuidados, compras y minijuego sin dependencias de ficheros externos [CUMPLIDO].
   4. Botón de alternancia de audio accesible en encabezado de la aplicación [CUMPLIDO].
+
+---
+
+### Sprint 5: Despliegue y Publicación Web
+
+#### T-11: Despliegue Continuo a GitHub Pages y Publicación de Demo Web [EN CURSO]
+- **Dependencias:** T-10
+- **Objetivo:** Configurar el pipeline automatizado de CI/CD para GitHub Pages y publicar la demo web pública oficial en `https://augustoalr.github.io/pet-society-reborn/`.
+- **Criterios de Aceptación:**
+  1. Base path dinámico en `vite.config.ts`: `/pet-society-reborn/` en despliegues a Pages / CI y `/` en entorno local [CUMPLIDO].
+  2. Workflow `.github/workflows/deploy.yml` configurado con permisos (`pages: write`, `id-token: write`), Node 20, verificación `npm run verify`, build con base path y despliegue con acciones oficiales de GitHub Pages [CUMPLIDO].
+  3. Enlace directo a la demo jugable en `README.md` (`https://augustoalr.github.io/pet-society-reborn/`) [CUMPLIDO].
+  4. Suite de verificación unificada `npm run verify` pasando al 100% [CUMPLIDO].
