@@ -86,3 +86,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Física continua desacoplada del renderizado y bucle de juego basado en Delta Time ($dt$).
 - **Por qué se hizo así:** Separar las ecuaciones de movimiento, gravedad y rebote en funciones matemáticas puras (`ballGameLogic.ts`) permite probar toda la física del juego de forma determinista y sin depender de un navegador WebGL. Además, multiplicar aceleraciones y velocidades por `deltaTimeSeconds` asegura que la pelota se mueva con idéntica fluidez a 30 FPS, 60 FPS o 144 FPS sin sufrir saltos erráticos ni atravesar paredes (anti-tunneling).
 - **Qué aprendí:** Vincular las recompensas del minijuego (monedas y felicidad) a la economía central y persistencia del juego mediante transacciones puras conecta mecánicas casuales con el bucle principal de retención del jugador.
+
+---
+
+### T-10: Pulido Visual, Audio Wrapper y Validación del MVP
+- **Concepto clave:** Síntesis de sonido procedural vía Web Audio API y pruebas de integración de ciclo completo (E2E Game Loop).
+- **Por qué se hizo así:** Depender de archivos de audio externos (`.mp3` o `.wav`) suele provocar enlaces rotos, latencia de descarga o fallos de CORS en entornos web. Sintetizar tonos y ruidos con osciladores y envolventes ADSR garantiza carga instantánea, peso cero en assets y control total del volumen. Asimismo, una prueba E2E completa que atraviesa todos los subsistemas (Mascota $\rightarrow$ Cuidados $\rightarrow$ Minijuego $\rightarrow$ Billetera $\rightarrow$ Tienda $\rightarrow$ Habitación $\rightarrow$ Persistencia) asegura que el juego funciona como un todo armónico antes del lanzamiento.
+- **Qué aprendí:** Los navegadores bloquean el audio automático hasta el primer clic o toque del usuario; envolver el contexto de audio en un método defensivo `resumeAudioContext()` activado por cualquier interacción garantiza una experiencia sonora ininterrumpida sin lanzar advertencias en consola.

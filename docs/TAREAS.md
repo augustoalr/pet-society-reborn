@@ -128,9 +128,12 @@ Leyenda de etiquetas:
   5. Componente React accesible `MinigameHUD.tsx` con marcador en vivo, récord, monedas acumuladas y modal de Game Over con botones de reinicio y retorno [CUMPLIDO].
   6. Integración atómica con `usePetCare` (`recordMinigameResult`), acreditación en billetera y persistencia automática en `GameStateRepository` [CUMPLIDO].
 
-#### T-10: Pulido Visual, Audio Wrapper y Validación del MVP
+#### T-10: Pulido Visual, Audio Wrapper y Validación del MVP [COMPLETADA]
 - **Dependencias:** T-05, T-08, T-09
+- **Merge:** Commit `dfa60d5` en `main` (PR #28).
 - **Objetivo:** Añadir efectos de sonido con wrapper desacoplado, animaciones de feedback visual y verificar el bucle completo de experiencia de usuario.
 - **Criterios de Aceptación:**
-  1. Audio con opción de silenciar/ajustar volumen persistente.
-  2. Flujo completo validado: Crear mascota -> Cuidar -> Jugar minijuego -> Ganar monedas -> Comprar ítem -> Decorar habitación -> Recargar página sin perder nada.
+  1. Audio con opción de silenciar/ajustar volumen persistente en `localStorage` implementado con Web Audio API procedural [CUMPLIDO].
+  2. Flujo completo validado con suite E2E: Crear mascota -> Cuidar -> Jugar minijuego -> Ganar monedas -> Comprar ítem -> Decorar habitación -> Recargar página sin perder nada (`src/e2e/gameLoop.test.ts`) [CUMPLIDO].
+  3. Integración de efectos de sonido en cuidados, compras y minijuego sin dependencias de ficheros externos [CUMPLIDO].
+  4. Botón de alternancia de audio accesible en encabezado de la aplicación [CUMPLIDO].
