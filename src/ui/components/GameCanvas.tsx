@@ -32,6 +32,8 @@ export interface GameCanvasProps {
   readonly onMinigameScoreChange?: (score: number, combo: number) => void;
   /** Callback cuando la pelota toca el suelo (fin de partida del minijuego). */
   readonly onMinigameGameOver?: (finalScore: number, coinsEarned: number) => void;
+  /** Callback al golpear con éxito la pelota en el minijuego. */
+  readonly onMinigameHit?: (combo: number) => void;
   /** Callback de actualización de estado general del minijuego. */
   readonly onMinigameStateChange?: (state: BallGameState) => void;
 }
@@ -63,6 +65,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onFurnitureSelect,
   onMinigameScoreChange,
   onMinigameGameOver,
+  onMinigameHit,
   onMinigameStateChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -183,9 +186,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     if (status === 'ready' && engineRef.current) {
       engineRef.current.setMinigameScoreHandler(onMinigameScoreChange ?? null);
       engineRef.current.setMinigameGameOverHandler(onMinigameGameOver ?? null);
+      engineRef.current.setMinigameHitHandler(onMinigameHit ?? null);
       engineRef.current.setMinigameStateChangeHandler(onMinigameStateChange ?? null);
     }
-  }, [onMinigameScoreChange, onMinigameGameOver, onMinigameStateChange, status]);
+  }, [onMinigameScoreChange, onMinigameGameOver, onMinigameHit, onMinigameStateChange, status]);
 
   return (
     <div

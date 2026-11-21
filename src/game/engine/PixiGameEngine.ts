@@ -45,6 +45,7 @@ export class PixiGameEngine {
   private furnitureSelectedHandler: ((itemId: string | null) => void) | null = null;
   private minigameScoreHandler: ((score: number, combo: number) => void) | null = null;
   private minigameGameOverHandler: ((finalScore: number, coinsEarned: number) => void) | null = null;
+  private minigameHitHandler: ((combo: number) => void) | null = null;
   private minigameStateChangeHandler: ((state: BallGameState) => void) | null = null;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
 
@@ -117,6 +118,13 @@ export class PixiGameEngine {
     handler: ((finalScore: number, coinsEarned: number) => void) | null
   ): void {
     this.minigameGameOverHandler = handler;
+  }
+
+  /**
+   * Configura el callback al asestar un golpe válido a la pelota en el minijuego.
+   */
+  setMinigameHitHandler(handler: ((combo: number) => void) | null): void {
+    this.minigameHitHandler = handler;
   }
 
   /**
@@ -201,6 +209,9 @@ export class PixiGameEngine {
       },
       onGameOver: (finalScore, coinsEarned) => {
         this.minigameGameOverHandler?.(finalScore, coinsEarned);
+      },
+      onHitSuccess: (combo) => {
+        this.minigameHitHandler?.(combo);
       },
       onStateChange: (state) => {
         this.minigameStateChangeHandler?.(state);
@@ -500,6 +511,7 @@ export class PixiGameEngine {
     this.furnitureSelectedHandler = null;
     this.minigameScoreHandler = null;
     this.minigameGameOverHandler = null;
+    this.minigameHitHandler = null;
     this.minigameStateChangeHandler = null;
 
     this.app.destroy(true, { children: true });
