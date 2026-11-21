@@ -17,6 +17,7 @@
 | T-07 Habitación y Muebles | T-07 habitacion-decoracion | t-07-habitacion-decoracion | Local | #22 | Hecho | 2026-11-20 | 2026-11-20 (7579016) | Habitación procedimental 800x600, catálogo de muebles, drag&drop, z-sorting y persistencia |
 | T-08 Tienda de Ítems | T-08 tienda-items | t-08-tienda-items | Local | #24 | Hecho | 2026-11-20 | 2026-11-20 (a78a252) | Catálogo por categorías (comida, ropa, muebles), validación de compra y feedback visual |
 | T-09 Minijuego de Pelota | T-09 minijuego-pelota | t-09-minijuego-pelota | Local | #26 | Hecho | 2026-11-20 | 2026-11-20 (8cef8f4) | Malabares de pelota en jardín exterior, física pura, combos, recompensas y HUD |
+| T-10 Pulido y Audio MVP | T-10 pulido-audio-mvp | t-10-pulido-audio-mvp | Local | #28 | Hecho | 2026-11-21 | 2026-11-21 (dfa60d5) | Audio procedural Web Audio API, persistencia de volumen, pulido de UI y validación E2E |
 
 ## Conversaciones activas
 - Manager (fija)
