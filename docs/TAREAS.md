@@ -164,15 +164,16 @@ Leyenda de etiquetas:
   4. Separación estricta de capas: muebles de suelo solo en la rejilla inferior; ventanas y cuadros restringidos a la pared [CUMPLIDO].
   5. `npm run verify` pasa al 100% [CUMPLIDO].
 
-#### T-ART-03: Rediseño Jugoso del Minijuego de Pelota (Física, Textura y Sombra)
+#### T-ART-03: Rediseño Jugoso del Minijuego de Pelota (Física, Textura y Sombra) [COMPLETADA]
 - **Dependencias:** T-09, T-ART-01
+- **Merge:** Commit `1a435d8` en `main` (PR #37).
 - **Objetivo:** Rebalancear y embellecer el minijuego de pelota: aumentar la pelota al doble de su tamaño con textura clásica de fútbol/juguete retro, sombra dinámica reactiva en el césped, gravedad y coeficientes de rebote jugosos (juicy physics) para malabares adictivos y divertidos.
 - **Criterios de Aceptación:**
-  1. Pelota de gran visibilidad (mínimo el doble de tamaño) con arte vectorial icónico tipo juguete/balón clásico.
-  2. Física reajustada para permitir malabares placenteros, menos punitivos y con mayor tiempo de reacción.
-  3. Efectos visuales de impacto aumentados (squash & stretch acentuado, partículas estelares y sonido sintetizado reactivo).
-  4. La mascota en el césped acompaña activamente el movimiento de la pelota con su mirada y saltitos de celebración.
-  5. `npm run verify` pasa al 100%.
+  1. Pelota de gran visibilidad (mínimo el doble de tamaño) con arte vectorial icónico tipo juguete/balón clásico [CUMPLIDO].
+  2. Física reajustada para permitir malabares placenteros, menos punitivos y con mayor tiempo de reacción [CUMPLIDO].
+  3. Efectos visuales de impacto aumentados (squash & stretch acentuado, partículas estelares y sonido sintetizado reactivo) [CUMPLIDO].
+  4. La mascota en el césped acompaña activamente el movimiento de la pelota con su mirada y saltitos de celebración [CUMPLIDO].
+  5. `npm run verify` pasa al 100% [CUMPLIDO].
 
 ---
 
