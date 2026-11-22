@@ -114,3 +114,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Profundidad arquitectónica 2.5D mediante perspectiva diorama y anclaje físico mediante rejilla magnética y sombras desacopladas.
 - **Por qué se hizo así:** La colocación libre de coordenadas continuas permite que los muebles queden en el aire o desalineados, rompiendo la inmersión de casa de muñecas. Implementar una rejilla discreta (`RoomGrid`) con funciones matemáticas puras (`snapToGrid`, `canPlaceItemAt`) garantiza que el jugador solo sitúe objetos en el suelo o en la pared según su categoría de diseño. Además, desacoplar la sombra en una capa inferior independiente permite elevar el mueble durante el arrastre con escala reactiva, otorgando una sensación táctil de peso y volumen.
 - **Qué aprendí:** Eliminar el marco negro tipo letterbox envolviendo el lienzo con un degradado de viñeta cálido (`dioramaBackdrop`) expande visualmente la escena a pantalla completa sin distorsionar la resolución virtual fija 4:3 (800x600).
+
+---
+
+### T-ART-03: Rediseño Jugoso del Minijuego de Pelota (Física, Textura y Sombra)
+- **Concepto clave:** Game Feel y "Juice" en videojuegos casuales (Iluminación estática vs rotación de textura, amortiguación no lineal y reactividad del entorno).
+- **Por qué se hizo así:** Si una esfera rota rotando todo su nodo gráfico en 2D, el reflejo de luz gira con ella rompiendo la ilusión tridimensional. Separar la textura del balón (que gira con la velocidad horizontal) de las capas superiores de luz ambiental, bisel y glint especular (que permanecen fijas según el sol cenital) crea un volumen 3D convincente. Asimismo, duplicar el radio y reducir la gravedad produce parábolas más flotantes que aumentan el tiempo de reacción, convirtiendo una mecánica frustrante en una experiencia lúdica relajante y satisfactoria.
+- **Qué aprendí:** Incorporar a la mascota en el minijuego siguiendo la pelota con la mirada y celebrando con saltitos conecta emocionalmente al jugador con su mascota durante las sesiones de juego secundarias.
