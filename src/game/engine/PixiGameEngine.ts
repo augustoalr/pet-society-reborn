@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
 import type { BallGameState, PetAppearance, PetClothes, Room } from '../../domain';
-import { PetView } from '../pet';
+import { PetView, isFloorPosition, clampToFloor } from '../pet';
 import { RoomView, FurnitureView } from '../room';
 import { BallGameView } from '../minigame';
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, calculateViewportScale } from '../viewport';
@@ -48,6 +48,9 @@ export class PixiGameEngine {
   private minigameHitHandler: ((combo: number) => void) | null = null;
   private minigameStateChangeHandler: ((state: BallGameState) => void) | null = null;
   private readonly pointerHandlers = new Map<GamePointerEventType, Set<GamePointerEventHandler>>();
+  private readonly onCanvasPointerLeave = () => {
+    this.petView?.setCursorPosition(null);
+  };
 
   /** Indica si el motor está inicializado y listo para renderizar. */
   get isInitialized(): boolean {
@@ -180,6 +183,14 @@ export class PixiGameEngine {
     });
 
     container.appendChild(this.app.canvas);
+    try {
+      (this.app.canvas as HTMLCanvasElement)?.addEventListener?.(
+        'pointerleave',
+        this.onCanvasPointerLeave
+      );
+    } catch {
+      // Ignorar en entornos sin DOM completo
+    }
 
     // Habilitar ordenamiento automático de profundidad por zIndex en el escenario
     this.app.stage.sortableChildren = true;
@@ -310,6 +321,7 @@ export class PixiGameEngine {
       }
       if (this.petView) {
         this.petView.visible = true;
+        this.petView.stopWalking();
         this.petView.setPosition(400, 350);
       }
       if (this.ballGameView) {
@@ -324,6 +336,8 @@ export class PixiGameEngine {
         view.visible = false;
       }
       if (this.petView) {
+        this.petView.stopWalking();
+        this.petView.setCursorPosition(null);
         this.petView.visible = false;
       }
       if (this.ballGameView) {
@@ -505,6 +519,17 @@ export class PixiGameEngine {
       this.ballGameView = null;
     }
 
+    if (this.app) {
+      try {
+        (this.app.canvas as HTMLCanvasElement)?.removeEventListener?.(
+          'pointerleave',
+          this.onCanvasPointerLeave
+        );
+      } catch {
+        // Ignorar en entornos de test
+      }
+    }
+
     this.pointerHandlers.clear();
     this.petClickHandler = null;
     this.furnitureMovedHandler = null;
@@ -533,12 +558,26 @@ export class PixiGameEngine {
 
     for (const type of eventTypes) {
       this.app.stage.on(type, (pixiEvent) => {
+        const globalPos = pixiEvent.global;
+
+        // Comportamiento reactivo de la mascota en la habitación
+        if (this.gameMode === 'room') {
+          if (type === 'pointermove') {
+            this.petView?.setCursorPosition({ x: globalPos.x, y: globalPos.y });
+          } else if (type === 'pointerdown' && !this.decoratingMode) {
+            if (isFloorPosition({ x: globalPos.x, y: globalPos.y })) {
+              const safeTarget = clampToFloor({ x: globalPos.x, y: globalPos.y });
+              this.petView?.walkTo(safeTarget.x, safeTarget.y);
+              this.sortWorldDepth();
+            }
+          }
+        }
+
         const handlers = this.pointerHandlers.get(type);
         if (!handlers || handlers.size === 0) {
           return;
         }
 
-        const globalPos = pixiEvent.global;
         const gameEvent: GamePointerEvent = {
           type,
           virtualX: globalPos.x,
