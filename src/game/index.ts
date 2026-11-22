@@ -16,12 +16,22 @@ export {
   getPetColorPalette,
   PET_LAYER_ORDER,
   PET_LAYER_NAMES,
+  drawShadow,
+  PET_WALK_BOUNDS,
+  FLOOR_SURFACE_Y,
+  isFloorPosition,
+  clampToFloor,
 } from './pet';
 export type {
   PetLayerOrderKey,
   PetLayerIndex,
   PetColorPalette,
   FacialFeatureColors,
+  DrawEyeOptions,
+  DrawBodyOptions,
+  BlinkState,
+  WalkStepResult,
+  WalkAnimationOffsets,
 } from './pet';
 
 export {
@@ -39,4 +49,3 @@ export type { RoomLayoutConfig, FurnitureDefinition, FurnitureMovedEvent } from 
 
 export { BallGameView } from './minigame';
 export type { BallGameViewOptions } from './minigame';
-
