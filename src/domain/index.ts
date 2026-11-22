@@ -48,10 +48,27 @@ export {
   purchase,
 } from './economy';
 export type { InventoryItem, Inventory, ItemCategory } from './inventory';
-export type { Room, PlacedItem, Bounds } from './room';
+export type {
+  Room,
+  PlacedItem,
+  Bounds,
+  PlacementLayer,
+  GridCell,
+  RoomGrid,
+} from './room';
 export {
   DEFAULT_ROOM_BOUNDS,
   DEFAULT_FLOOR_BOUNDS,
+  WALL_BOUNDS,
+  DEFAULT_FLOOR_GRID,
+  DEFAULT_WALL_GRID,
+  createRoomGrid,
+  snapToGrid,
+  findNearestGridCell,
+  getItemPlacementLayer,
+  getValidBoundsForLayer,
+  isValidPlacementPosition,
+  canPlaceItemAt,
   clampToBounds,
   isWithinBounds,
   placeItemInRoom,

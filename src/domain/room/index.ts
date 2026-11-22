@@ -1,7 +1,25 @@
-export type { Room, PlacedItem, Bounds } from './types';
+export type {
+  Room,
+  PlacedItem,
+  Bounds,
+  PlacementLayer,
+  GridCell,
+  RoomGrid,
+} from './types';
+
 export {
   DEFAULT_ROOM_BOUNDS,
   DEFAULT_FLOOR_BOUNDS,
+  WALL_BOUNDS,
+  DEFAULT_FLOOR_GRID,
+  DEFAULT_WALL_GRID,
+  createRoomGrid,
+  snapToGrid,
+  findNearestGridCell,
+  getItemPlacementLayer,
+  getValidBoundsForLayer,
+  isValidPlacementPosition,
+  canPlaceItemAt,
   clampToBounds,
   isWithinBounds,
   placeItemInRoom,

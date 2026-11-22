@@ -1,11 +1,19 @@
 export { RoomView } from './RoomView';
 export { FurnitureView } from './FurnitureView';
-export { BASE_FURNITURE_CATALOG, getFurnitureDefinition } from './furnitureCatalog';
 export {
+  BASE_FURNITURE_CATALOG,
+  BASE_WALL_CATALOG,
+  getFurnitureDefinition,
+} from './furnitureCatalog';
+export {
+  drawFurnitureShadow,
   drawBed,
   drawTable,
   drawLamp,
   drawPlant,
+  drawPainting,
+  drawClock,
+  drawWallWindow,
   drawFallbackFurniture,
   drawFurnitureGraphics,
 } from './furnitureDrawers';

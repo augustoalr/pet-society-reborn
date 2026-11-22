@@ -30,7 +30,11 @@ import {
   placeFurnitureFromInventory,
   moveItemInRoom,
   returnFurnitureToInventory,
-  DEFAULT_ROOM_BOUNDS,
+  DEFAULT_FLOOR_GRID,
+  DEFAULT_WALL_GRID,
+  getItemPlacementLayer,
+  getValidBoundsForLayer,
+  snapToGrid,
   processPurchase,
   calculateCoinReward,
   calculateHappinessReward,
@@ -543,20 +547,26 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
     [repository]
   );
 
-  // 11. Gestión de muebles y decoración inmutable (T-07)
+  // 11. Gestión de muebles y decoración inmutable (T-07, T-ART-02)
   const placeFurniture = useCallback(
     (itemId: string, position?: { x: number; y: number }): boolean => {
       if (!latestStateRef.current) return false;
 
       const current = latestStateRef.current;
-      const defaultPos = position ?? { x: 400, y: 380 };
+      const layer = getItemPlacementLayer(itemId);
+      const targetBounds = getValidBoundsForLayer(layer);
+      const grid = layer === 'wall' ? DEFAULT_WALL_GRID : DEFAULT_FLOOR_GRID;
+
+      const candidatePos =
+        position ?? (layer === 'wall' ? { x: 400, y: 150 } : { x: 400, y: 415 });
+      const snappedPos = snapToGrid(candidatePos, grid);
 
       const result = placeFurnitureFromInventory(
         current.room,
         current.inventory,
         itemId,
-        defaultPos,
-        DEFAULT_ROOM_BOUNDS
+        snappedPos,
+        targetBounds
       );
 
       if (!result.success) {
@@ -584,11 +594,16 @@ export function usePetCare(options: UsePetCareOptions = {}): UsePetCareResult {
       if (!latestStateRef.current) return false;
 
       const current = latestStateRef.current;
+      const layer = getItemPlacementLayer(itemId);
+      const targetBounds = getValidBoundsForLayer(layer);
+      const grid = layer === 'wall' ? DEFAULT_WALL_GRID : DEFAULT_FLOOR_GRID;
+      const snappedPos = snapToGrid(newPosition, grid);
+
       const updatedRoom = moveItemInRoom(
         current.room,
         itemId,
-        newPosition,
-        DEFAULT_ROOM_BOUNDS
+        snappedPos,
+        targetBounds
       );
 
       if (updatedRoom === current.room) {

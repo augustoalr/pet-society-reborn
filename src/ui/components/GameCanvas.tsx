@@ -199,6 +199,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
+        background: theme.colors.dioramaBackdrop,
         backgroundColor: theme.colors.gameContainerBackground,
         display: 'flex',
         alignItems: 'center',
