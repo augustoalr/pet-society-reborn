@@ -142,15 +142,16 @@ Leyenda de etiquetas:
 
 ### Sprint 4B: Rediseño Artístico y Game Feel Playfish (Flash Vectorial Chibi)
 
-#### T-ART-01: Mascota Viva Chibi, Sombra Elíptica, Expresión y Desplazamiento por Clic
+#### T-ART-01: Mascota Viva Chibi, Sombra Elíptica, Expresión y Desplazamiento por Clic [COMPLETADA]
 - **Dependencias:** T-04, T-05
+- **Merge:** Commit `4cefa15` en `main` (PR #33).
 - **Objetivo:** Rediseñar la mascota al estilo Flash Vectorial Chibi de Playfish: proporciones toyetic, cabeza redondeada, ojos expresivos con pupila móvil que sigue el puntero, animación de parpadeo natural cada 3-5s, respiración con squash & stretch, sombra elíptica difuminada bajo los pies y mecánica de caminar por clic sobre el suelo con ciclo de patitas.
 - **Criterios de Aceptación:**
-  1. Renderizado de mascota estilizado (trazos limpios, degradados sutiles, proporciones chibi y sombra elíptica oscura en la base).
-  2. Bucle de animación idle vivo: respiración elástica sutil y parpadeo aleatorio/periódico cada 3-5 segundos.
-  3. Mirada reactiva: las pupilas se orientan suavemente en la dirección del cursor/toque.
-  4. Movimiento sobre el suelo: hacer clic en el suelo de la sala hace que la mascota camine hacia esa coordenada con animación de pasos y voltee la dirección (flip horizontal) según el destino.
-  5. `npm run verify` pasa al 100%.
+  1. Renderizado de mascota estilizado (trazos limpios, degradados sutiles, proporciones chibi y sombra elíptica oscura en la base) [CUMPLIDO].
+  2. Bucle de animación idle vivo: respiración elástica sutil y parpadeo aleatorio/periódico cada 3-5 segundos [CUMPLIDO].
+  3. Mirada reactiva: las pupilas se orientan suavemente en la dirección del cursor/toque [CUMPLIDO].
+  4. Movimiento sobre el suelo: hacer clic en el suelo de la sala hace que la mascota camine hacia esa coordenada con animación de pasos y voltee la dirección (flip horizontal) según el destino [CUMPLIDO].
+  5. `npm run verify` pasa al 100% [CUMPLIDO].
 
 #### T-ART-02: Habitación Diorama 2.5D, Rejilla (Grid Snap) y Sombras de Muebles
 - **Dependencias:** T-07, T-ART-01

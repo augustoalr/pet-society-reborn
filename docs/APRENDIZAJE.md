@@ -100,3 +100,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Enrutamiento y base path condicional en compilación estática (Static Hosting Path Agnosticism).
 - **Por qué se hizo así:** Los sitios servidos bajo sub-rutas de dominio (como `usuario.github.io/proyecto/`) requieren que las referencias de scripts, CSS y assets usen una ruta base relativa o prefijada (`/proyecto/`). Configurar dinámicamente `base` en Vite según la presencia de variables de entorno (`GITHUB_PAGES` o `GITHUB_ACTIONS`) permite compilar tanto para la raíz en desarrollo local (`/`) como para GitHub Pages sin duplicar configuraciones ni alterar el código fuente.
 - **Qué aprendí:** El pipeline de GitHub Actions para Pages (`configure-pages`, `upload-pages-artifact`, `deploy-pages`) con permisos OIDC (`id-token: write`) permite despliegues automáticos seguros y reproducibles directamente desde el CI sin necesidad de gestionar tokens de acceso personales (PATs).
+
+---
+
+### T-ART-01: Mascota Viva Chibi, Sombra Elíptica, Expresión y Desplazamiento por Clic
+- **Concepto clave:** Game Feel orgánico mediante animación de principios clásicos de Disney (Squash & Stretch, Waddle y Gaze Tracking).
+- **Por qué se hizo así:** Una mascota puramente estática o geométrica genera sensación de frialdad; incorporar una respiración sutil con deformación elástica coordinada con la dilatación de la sombra elíptica y un parpadeo periódico dota de vitalidad inmediata al personaje. Además, desacoplar el cálculo de la mirada (`gazeLogic.ts`) y la cinemática de caminar (`walkLogic.ts`) en módulos puros permite testear trayectorias y límites de pupilas sin depender del contexto de renderizado de PixiJS.
+- **Qué aprendí:** En el estilo Flash clásico de Playfish, voltear la escala horizontal (`scale.x = -1`) para simular la dirección hacia donde camina la mascota requiere invertir geométricamente el cálculo de las coordenadas relativas del ratón para que las pupilas no miren en sentido opuesto al cursor.
