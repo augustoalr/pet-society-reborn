@@ -153,15 +153,16 @@ Leyenda de etiquetas:
   4. Movimiento sobre el suelo: hacer clic en el suelo de la sala hace que la mascota camine hacia esa coordenada con animación de pasos y voltee la dirección (flip horizontal) según el destino [CUMPLIDO].
   5. `npm run verify` pasa al 100% [CUMPLIDO].
 
-#### T-ART-02: Habitación Diorama 2.5D, Rejilla (Grid Snap) y Sombras de Muebles
+#### T-ART-02: Habitación Diorama 2.5D, Rejilla (Grid Snap) y Sombras de Muebles [COMPLETADA]
 - **Dependencias:** T-07, T-ART-01
+- **Merge:** Commit `dff98b4` en `main` (PR #35).
 - **Objetivo:** Transformar la sala en una perspectiva diorama 2.5D de casa de muñecas cálida sin barras negras laterales invasivas (fondo envolvente centrado), con sistema de rejilla magnética (grid snap) en el suelo y sombras proyectadas de contacto para cada mueble.
 - **Criterios de Aceptación:**
-  1. Escenario diorama 2.5D cálido ocupando el viewport de forma armónica sin bordes negros cortados.
-  2. Rejilla de colocación (grid snap): los muebles se ajustan a celdas discretas del suelo y no pueden flotar en el aire.
-  3. Sombras de contacto vectoriales bajo cada mueble colocadas automáticamente.
-  4. Separación estricta de capas: muebles de suelo solo en la rejilla inferior; ventanas y cuadros restringidos a la pared.
-  5. `npm run verify` pasa al 100%.
+  1. Escenario diorama 2.5D cálido ocupando el viewport de forma armónica sin bordes negros cortados [CUMPLIDO].
+  2. Rejilla de colocación (grid snap): los muebles se ajustan a celdas discretas del suelo y no pueden flotar en el aire [CUMPLIDO].
+  3. Sombras de contacto vectoriales bajo cada mueble colocadas automáticamente [CUMPLIDO].
+  4. Separación estricta de capas: muebles de suelo solo en la rejilla inferior; ventanas y cuadros restringidos a la pared [CUMPLIDO].
+  5. `npm run verify` pasa al 100% [CUMPLIDO].
 
 #### T-ART-03: Rediseño Jugoso del Minijuego de Pelota (Física, Textura y Sombra)
 - **Dependencias:** T-09, T-ART-01
