@@ -94,6 +94,11 @@ export class PetView extends Container {
   private walkSpeed = 180; // píxeles por segundo a velocidad constante
   private onArrivalCallback: (() => void) | null = null;
 
+  // Saltito de júbilo / celebración (T-ART-03)
+  private cheerTimer = 0;
+  private cheerDuration = 0.35;
+  private cheerHeight = 32;
+
   constructor(
     appearance: PetAppearance = {
       color: 'pink',
@@ -207,6 +212,30 @@ export class PetView extends Container {
   }
 
   /**
+   * Modifica la orientación horizontal de la mascota (1 = derecha, -1 = izquierda).
+   * Aplica la transformación de volteo horizontal (flip) y ajusta la referencia de mirada.
+   */
+  setFacing(direction: 1 | -1): void {
+    if (this.facingDirection !== direction) {
+      this.facingDirection = direction;
+      this.applyFacingTransform();
+    }
+  }
+
+  /**
+   * Desencadena una animación de salto de júbilo / celebración (cheer hop).
+   * Eleva las capas corporales despegándolas del suelo mientras la sombra permanece anclada.
+   *
+   * @param duration Duración en segundos de la animación (por defecto 0.35s).
+   * @param height Altura máxima del salto en píxeles (por defecto 32px).
+   */
+  cheer(duration = 0.35, height = 32): void {
+    this.cheerTimer = duration;
+    this.cheerDuration = Math.max(0.1, duration);
+    this.cheerHeight = height;
+  }
+
+  /**
    * Ordena a la mascota desplazarse hacia unas coordenadas del suelo a velocidad constante.
    *
    * - Se orienta automáticamente (flip horizontal).
@@ -313,6 +342,27 @@ export class PetView extends Container {
 
     // 2. Mirada reactiva al cursor y parpadeo natural
     this.updateGazeAndBlink(delta, deltaSeconds);
+
+    // 3. Salto de júbilo / cheer hop (T-ART-03)
+    if (this.cheerTimer > 0) {
+      this.cheerTimer -= deltaSeconds;
+      const progress = Math.max(0, 1 - (this.cheerTimer / this.cheerDuration));
+      const hopOffset = Math.sin(progress * Math.PI) * this.cheerHeight;
+
+      // Desplazamiento vertical hacia arriba de las capas corporales
+      this.bodyLayer.y -= hopOffset;
+      this.headLayer.y -= hopOffset;
+      this.frontEarsLayer.y -= hopOffset;
+      this.backEarsLayer.y -= hopOffset;
+      this.eyesLayer.y -= hopOffset;
+      this.mouthCheeksLayer.y -= hopOffset;
+      this.clothesLayer.y -= hopOffset;
+
+      // La sombra permanece anclada al suelo pero se contrae y atenúa orgánicamente
+      const shadowFactor = Math.max(0.65, 1 - (hopOffset / this.cheerHeight) * 0.3);
+      this.shadowLayer.scale.set(shadowFactor, shadowFactor);
+      this.shadowLayer.alpha = Math.max(0.5, 1 - (hopOffset / this.cheerHeight) * 0.4);
+    }
   }
 
   /**
@@ -500,6 +550,8 @@ export class PetView extends Container {
     this.shadowLayer.scale.set(1, 1);
     this.shadowLayer.rotation = 0;
     this.shadowLayer.y = 0;
+    this.shadowLayer.alpha = 1;
+    this.cheerTimer = 0;
 
     // Redibujar el cuerpo en reposo (patitas alineadas)
     const palette = getPetColorPalette(this.currentAppearance.color);

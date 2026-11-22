@@ -23,14 +23,14 @@ export const DEFAULT_BALL_BOUNDS: GameBounds = {
   maxY: 510, // Nivel del suelo del jardín donde la pelota colisiona y termina la ronda
 };
 
-/** Parámetros físicos calibrados para una jugabilidad fluida y reactiva. */
+/** Parámetros físicos calibrados para una jugabilidad fluida, flotante y reactiva (T-ART-03). */
 export const DEFAULT_BALL_CONFIG: BallPhysicsConfig = {
-  radius: 24,
-  gravity: 920, // px/s² de aceleración hacia abajo
-  reboundRestitution: 0.75, // Coeficiente de elasticidad en paredes laterales y techo
-  hitImpulseY: -680, // Impulso vertical hacia arriba por golpe
-  maxSpeedX: 450, // Límite horizontal para no perder la pelota de vista
-  maxSpeedY: 950, // Velocidad terminal de caída
+  radius: 48, // Duplicado de 24px a 48px (~96-100px de diámetro para visibilidad y comodidad táctil)
+  gravity: 780, // px/s² de aceleración hacia abajo (arco de parábola más generoso y flotante)
+  reboundRestitution: 0.78, // Coeficiente de elasticidad jugoso en paredes laterales y techo
+  hitImpulseY: -640, // Impulso vertical hacia arriba por golpe
+  maxSpeedX: 420, // Límite horizontal para no perder la pelota de vista
+  maxSpeedY: 900, // Velocidad terminal de caída
 };
 
 /**
@@ -108,7 +108,7 @@ export function startBallGame(state: BallGameState): BallGameState {
     ball: {
       ...state.ball,
       vx: 0,
-      vy: -200, // Leve saque suave hacia arriba
+      vy: -220, // Leve saque suave hacia arriba
     },
   };
 }
@@ -228,7 +228,7 @@ export function updateBallPhysics(
 export function hitBall(
   state: BallGameState,
   hitPosition?: { readonly x: number; readonly y: number },
-  hitMargin = 16
+  hitMargin = 20
 ): BallGameState {
   // Early return si la partida ya terminó
   if (state.status === 'game_over') {
@@ -246,8 +246,9 @@ export function hitBall(
     // Desfase horizontal: positivo si se golpeó a la izquierda del centro
     const deltaX = state.ball.x - hitPosition.x;
     const normalizedOffset = Math.max(-1, Math.min(1, deltaX / state.ball.radius));
-    // Impulso horizontal proporcional al punto de golpe
-    newVx = normalizedOffset * 320;
+    // Modulación horizontal suave combinando la inercia previa con el nuevo impulso
+    newVx = (state.ball.vx * 0.35) + normalizedOffset * 340;
+    newVx = Math.max(-state.config.maxSpeedX, Math.min(state.config.maxSpeedX, newVx));
   }
 
   const newScore = state.score + 1;
