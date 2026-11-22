@@ -107,3 +107,10 @@ Este documento registra los aprendizajes técnicos, lecciones de arquitectura y 
 - **Concepto clave:** Game Feel orgánico mediante animación de principios clásicos de Disney (Squash & Stretch, Waddle y Gaze Tracking).
 - **Por qué se hizo así:** Una mascota puramente estática o geométrica genera sensación de frialdad; incorporar una respiración sutil con deformación elástica coordinada con la dilatación de la sombra elíptica y un parpadeo periódico dota de vitalidad inmediata al personaje. Además, desacoplar el cálculo de la mirada (`gazeLogic.ts`) y la cinemática de caminar (`walkLogic.ts`) en módulos puros permite testear trayectorias y límites de pupilas sin depender del contexto de renderizado de PixiJS.
 - **Qué aprendí:** En el estilo Flash clásico de Playfish, voltear la escala horizontal (`scale.x = -1`) para simular la dirección hacia donde camina la mascota requiere invertir geométricamente el cálculo de las coordenadas relativas del ratón para que las pupilas no miren en sentido opuesto al cursor.
+
+---
+
+### T-ART-02: Habitación Diorama 2.5D, Rejilla (Grid Snap) y Sombras de Muebles
+- **Concepto clave:** Profundidad arquitectónica 2.5D mediante perspectiva diorama y anclaje físico mediante rejilla magnética y sombras desacopladas.
+- **Por qué se hizo así:** La colocación libre de coordenadas continuas permite que los muebles queden en el aire o desalineados, rompiendo la inmersión de casa de muñecas. Implementar una rejilla discreta (`RoomGrid`) con funciones matemáticas puras (`snapToGrid`, `canPlaceItemAt`) garantiza que el jugador solo sitúe objetos en el suelo o en la pared según su categoría de diseño. Además, desacoplar la sombra en una capa inferior independiente permite elevar el mueble durante el arrastre con escala reactiva, otorgando una sensación táctil de peso y volumen.
+- **Qué aprendí:** Eliminar el marco negro tipo letterbox envolviendo el lienzo con un degradado de viñeta cálido (`dioramaBackdrop`) expande visualmente la escena a pantalla completa sin distorsionar la resolución virtual fija 4:3 (800x600).
