@@ -140,6 +140,40 @@ Leyenda de etiquetas:
 
 ---
 
+### Sprint 4B: Rediseño Artístico y Game Feel Playfish (Flash Vectorial Chibi)
+
+#### T-ART-01: Mascota Viva Chibi, Sombra Elíptica, Expresión y Desplazamiento por Clic
+- **Dependencias:** T-04, T-05
+- **Objetivo:** Rediseñar la mascota al estilo Flash Vectorial Chibi de Playfish: proporciones toyetic, cabeza redondeada, ojos expresivos con pupila móvil que sigue el puntero, animación de parpadeo natural cada 3-5s, respiración con squash & stretch, sombra elíptica difuminada bajo los pies y mecánica de caminar por clic sobre el suelo con ciclo de patitas.
+- **Criterios de Aceptación:**
+  1. Renderizado de mascota estilizado (trazos limpios, degradados sutiles, proporciones chibi y sombra elíptica oscura en la base).
+  2. Bucle de animación idle vivo: respiración elástica sutil y parpadeo aleatorio/periódico cada 3-5 segundos.
+  3. Mirada reactiva: las pupilas se orientan suavemente en la dirección del cursor/toque.
+  4. Movimiento sobre el suelo: hacer clic en el suelo de la sala hace que la mascota camine hacia esa coordenada con animación de pasos y voltee la dirección (flip horizontal) según el destino.
+  5. `npm run verify` pasa al 100%.
+
+#### T-ART-02: Habitación Diorama 2.5D, Rejilla (Grid Snap) y Sombras de Muebles
+- **Dependencias:** T-07, T-ART-01
+- **Objetivo:** Transformar la sala en una perspectiva diorama 2.5D de casa de muñecas cálida sin barras negras laterales invasivas (fondo envolvente centrado), con sistema de rejilla magnética (grid snap) en el suelo y sombras proyectadas de contacto para cada mueble.
+- **Criterios de Aceptación:**
+  1. Escenario diorama 2.5D cálido ocupando el viewport de forma armónica sin bordes negros cortados.
+  2. Rejilla de colocación (grid snap): los muebles se ajustan a celdas discretas del suelo y no pueden flotar en el aire.
+  3. Sombras de contacto vectoriales bajo cada mueble colocadas automáticamente.
+  4. Separación estricta de capas: muebles de suelo solo en la rejilla inferior; ventanas y cuadros restringidos a la pared.
+  5. `npm run verify` pasa al 100%.
+
+#### T-ART-03: Rediseño Jugoso del Minijuego de Pelota (Física, Textura y Sombra)
+- **Dependencias:** T-09, T-ART-01
+- **Objetivo:** Rebalancear y embellecer el minijuego de pelota: aumentar la pelota al doble de su tamaño con textura clásica de fútbol/juguete retro, sombra dinámica reactiva en el césped, gravedad y coeficientes de rebote jugosos (juicy physics) para malabares adictivos y divertidos.
+- **Criterios de Aceptación:**
+  1. Pelota de gran visibilidad (mínimo el doble de tamaño) con arte vectorial icónico tipo juguete/balón clásico.
+  2. Física reajustada para permitir malabares placenteros, menos punitivos y con mayor tiempo de reacción.
+  3. Efectos visuales de impacto aumentados (squash & stretch acentuado, partículas estelares y sonido sintetizado reactivo).
+  4. La mascota en el césped acompaña activamente el movimiento de la pelota con su mirada y saltitos de celebración.
+  5. `npm run verify` pasa al 100%.
+
+---
+
 ### Sprint 5: Despliegue y Publicación Web
 
 #### T-11: Despliegue Continuo a GitHub Pages y Publicación de Demo Web [COMPLETADA]
