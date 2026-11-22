@@ -117,4 +117,87 @@ describe('BallGameView (Escenario y Render 2D del Minijuego de Pelota)', () => {
 
     ticker.destroy();
   });
+
+  it('renderiza la pelota grande con subcapas modulares de patrón e iluminación 3D', () => {
+    const view = new BallGameView();
+
+    // Radio físico duplicado a 48px (~96-100px de diámetro)
+    expect(view.state.ball.radius).toBe(48);
+
+    // Contenedor de la pelota interactiva (hijo índice 3)
+    const ballContainer = view.children[3];
+    expect(ballContainer.label).toBe('ball-container');
+    expect(ballContainer.children.length).toBe(2);
+
+    const patternGraphics = ballContainer.children[0];
+    const lightingGraphics = ballContainer.children[1];
+    expect(patternGraphics.label).toBe('ball-pattern');
+    expect(lightingGraphics.label).toBe('ball-lighting');
+
+    view.destroy();
+  });
+
+  it('la mascota sigue la trayectoria de la pelota con orientación y mirada', () => {
+    const view = new BallGameView();
+    const ticker = createMockTicker();
+    view.start(ticker);
+
+    // Inicialmente la pelota está en x=400 (a la derecha de la mascota en x=180)
+    ticker.update(16);
+    expect(view.pet.facing).toBe(1);
+
+    // Simular que la pelota viaja a la izquierda de la mascota (x=100 < 180 - 25)
+    // Forzamos temporalmente la posición de la pelota para verificar reactividad de la mascota
+    (view.state.ball as { x: number }).x = 100;
+    ticker.update(32);
+    expect(view.pet.facing).toBe(-1);
+
+    // Regresar a la derecha (x=500 > 180 + 25)
+    (view.state.ball as { x: number }).x = 500;
+    ticker.update(48);
+    expect(view.pet.facing).toBe(1);
+
+    view.destroy();
+    ticker.destroy();
+  });
+
+  it('strikeBall activa deformación elástica squash & stretch, chispas estelares y festejo de la mascota', () => {
+    const view = new BallGameView();
+    const cheerSpy = vi.spyOn(view.pet, 'cheer');
+
+    view.strikeBall();
+
+    // 1. Saltito de júbilo en la mascota
+    expect(cheerSpy).toHaveBeenCalledWith(0.35, 32);
+
+    // 2. Partículas estelares generadas en el contenedor de partículas (índice 4)
+    const particleContainer = view.children[4];
+    expect(particleContainer.label).toBe('particle-container');
+    expect(particleContainer.children.length).toBe(12);
+
+    // 3. Deformación squash & stretch aplicada en el contenedor de la pelota
+    const ballContainer = view.children[3];
+    const ticker = createMockTicker();
+    view.start(ticker);
+
+    // Al inicio del impacto (primer fotograma), está aplastada en Y y ensanchada en X
+    ticker.update(16);
+    expect(ballContainer.scale.y).toBeLessThan(1);
+    expect(ballContainer.scale.x).toBeGreaterThan(1);
+
+    view.destroy();
+    ticker.destroy();
+  });
+
+  it('sincroniza la sombra elíptica reactiva en el suelo según la altitud de la pelota', () => {
+    const view = new BallGameView();
+    const shadowGraphics = view.children[2];
+    expect(shadowGraphics.label).toBe('ball-shadow');
+
+    // La posición X de la sombra siempre coincide con la coordenada X de la pelota
+    expect(shadowGraphics.position.x).toBe(view.state.ball.x);
+    expect(shadowGraphics.position.y).toBe(view.state.bounds.maxY);
+
+    view.destroy();
+  });
 });

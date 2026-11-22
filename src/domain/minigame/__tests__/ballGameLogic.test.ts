@@ -34,6 +34,18 @@ describe('ballGameLogic (Lógica de Dominio del Minijuego de Pelota)', () => {
       expect(state.bounds).toEqual(DEFAULT_BALL_BOUNDS);
     });
 
+    it('duplica el radio físico de la pelota a 48px (~100px diámetro) para cumplir con T-ART-03', () => {
+      const state = createInitialBallGameState();
+
+      expect(state.ball.radius).toBe(48);
+      expect(state.ball.radius * 2).toBe(96);
+      expect(DEFAULT_BALL_CONFIG.radius).toBe(48);
+      // Físicas flotantes y generosas ("floaty & bouncy")
+      expect(DEFAULT_BALL_CONFIG.gravity).toBe(780);
+      expect(DEFAULT_BALL_CONFIG.hitImpulseY).toBe(-640);
+      expect(DEFAULT_BALL_CONFIG.reboundRestitution).toBe(0.78);
+    });
+
     it('respeta límites y récord máximo proporcionados', () => {
       const customBounds = { minX: 10, maxX: 500, minY: 10, maxY: 400 };
       const state = createInitialBallGameState(customBounds, 42);
@@ -233,6 +245,39 @@ describe('ballGameLogic (Lógica de Dominio del Minijuego de Pelota)', () => {
 
       expect(hitRight.ball.vx).toBeLessThan(0);
       expect(hitRight.ball.vy).toBe(DEFAULT_BALL_CONFIG.hitImpulseY);
+    });
+
+    it('combina inercia previa con nuevo impulso permitiendo contragolpes precisos', () => {
+      const base = startBallGame(createInitialBallGameState());
+      // Pelota desplazándose velozmente hacia la izquierda
+      const movingLeft: BallGameState = {
+        ...base,
+        ball: {
+          ...base.ball,
+          vx: -200,
+        },
+      };
+
+      // Golpe contundente a la izquierda del centro para revertir la dirección hacia la derecha
+      const counterHit = hitBall(movingLeft, { x: movingLeft.ball.x - 35, y: movingLeft.ball.y });
+
+      // Debe haber superado la inercia negativa (-200 * 0.35 = -70 + (35/48)*340 = +177.9 > 0)
+      expect(counterHit.ball.vx).toBeGreaterThan(0);
+    });
+
+    it('admite amplio margen táctil para comodidad en pantallas móviles táctiles', () => {
+      const base = startBallGame(createInitialBallGameState());
+      const ballX = base.ball.x;
+      const ballY = base.ball.y;
+
+      // Radio de la pelota = 48, margen por defecto = 20 => radio efectivo = 68px
+      // Toque a 60px del centro (dentro del radio efectivo)
+      const touchNear = hitBall(base, { x: ballX + 60, y: ballY });
+      expect(touchNear.score).toBe(1);
+
+      // Toque a 80px del centro (fuera del margen)
+      const touchFar = hitBall(base, { x: ballX + 80, y: ballY });
+      expect(touchFar.score).toBe(0);
     });
   });
 

@@ -201,4 +201,48 @@ describe('PetView', () => {
     petView.destroy();
     customTicker.destroy();
   });
+
+  it('setFacing permite modificar la orientación horizontal de forma directa', () => {
+    const petView = new PetView(defaultAppearance);
+
+    expect(petView.facing).toBe(1);
+    expect(petView.scale.x).toBe(1);
+
+    petView.setFacing(-1);
+    expect(petView.facing).toBe(-1);
+    expect(petView.scale.x).toBe(-1);
+
+    petView.setFacing(1);
+    expect(petView.facing).toBe(1);
+    expect(petView.scale.x).toBe(1);
+
+    petView.destroy();
+  });
+
+  it('cheer ejecuta un saltito de júbilo elevando las partes corporales con sombra anclada', () => {
+    const petView = new PetView(defaultAppearance);
+    const customTicker = new Ticker();
+    customTicker.autoStart = false;
+    customTicker.stop();
+    petView.startIdleAnimation(customTicker);
+
+    // Activar cheer hop
+    petView.cheer(0.35, 32);
+
+    // Avanzar medio ciclo (punto álgido del salto)
+    customTicker.update(175);
+
+    const body = petView.getLayer(2); // bodyLayer
+    const head = petView.getLayer(3); // headLayer
+    const shadow = petView.getLayer(0); // shadowLayer
+
+    // El cuerpo y la cabeza deben haberse elevado (y negativo)
+    expect(body.y).toBeLessThan(0);
+    expect(head.y).toBeLessThan(0);
+    // La sombra permanece con y = 0 relativa al origen
+    expect(shadow.y).toBe(0);
+
+    petView.destroy();
+    customTicker.destroy();
+  });
 });
