@@ -2,6 +2,8 @@
  * Tipos e interfaces para el subsistema de renderizado de la habitación y muebles en PixiJS.
  */
 
+import type { PlacementLayer } from '../../domain';
+
 /** Dimensiones y configuración de las áreas de la habitación virtual. */
 export interface RoomLayoutConfig {
   readonly width: number;
@@ -17,6 +19,7 @@ export interface FurnitureDefinition {
   readonly name: string;
   readonly description: string;
   readonly category: 'furniture';
+  readonly placementLayer?: PlacementLayer;
   readonly width: number;
   readonly height: number;
   /** Coordenadas sugeridas por defecto para colocar el mueble en la habitación. */

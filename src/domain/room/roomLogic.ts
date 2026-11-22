@@ -1,18 +1,18 @@
 /**
- * Lógica pura e inmutable para la gestión de la habitación y colocación de muebles.
+ * Lógica pura e inmutable para la gestión de la habitación, rejilla magnética (Grid Snap) y colocación de muebles.
  *
  * Responsabilidades:
  * - Validar y acotar coordenadas de muebles dentro de los límites espaciales de la habitación (R-01: SoC, R-03: Inmutabilidad).
- * - Colocar muebles en la habitación asegurando que no se dupliquen y respeten los límites válidos.
- * - Mover muebles existentes con acotamiento de límites (clamping).
- * - Retirar muebles de la sala de forma pura.
+ * - Proveer cálculo de rejilla magnética discreta (snapToGrid) para anclar físicamente los muebles al suelo o pared.
+ * - Discriminar capas de colocación: muebles de suelo ('floor') vs decoraciones de pared ('wall', e.g. ventanas, cuadros).
+ * - Prevenir que los muebles queden flotando en la pared o fuera del diorama.
  * - Coordinar el traspaso atómico de muebles entre el inventario del jugador y la habitación.
  */
 
 import type { Inventory, InventoryItem } from '../inventory';
-import type { Bounds, PlacedItem, Room } from './types';
+import type { Bounds, GridCell, PlacedItem, PlacementLayer, Room, RoomGrid } from './types';
 
-/** Límites espaciales por defecto dentro del lienzo virtual 800x600 para la habitación. */
+/** Límites espaciales por defecto dentro del lienzo virtual 800x600 para la habitación completa. */
 export const DEFAULT_ROOM_BOUNDS: Bounds = {
   minX: 60,
   maxX: 740,
@@ -27,6 +27,46 @@ export const DEFAULT_FLOOR_BOUNDS: Bounds = {
   minY: 340,
   maxY: 540,
 };
+
+/** Límites espaciales válidos para decoraciones montadas en la pared (cuadros, ventanas, relojes). */
+export const WALL_BOUNDS: Bounds = {
+  minX: 60,
+  maxX: 740,
+  minY: 60,
+  maxY: 290,
+};
+
+/**
+ * Determina la capa de colocación adecuada para un ítem a partir de su identificador.
+ *
+ * Los ítems con prefijo 'wall-' o que representan ventanas, cuadros o relojes pertenecen a 'wall'.
+ * El resto de muebles corresponden a 'floor' (apoyados en el suelo).
+ */
+export function getItemPlacementLayer(itemId: string): PlacementLayer {
+  if (!itemId) {
+    return 'floor';
+  }
+  const lower = itemId.toLowerCase();
+  if (
+    lower.startsWith('wall-') ||
+    lower.includes('window') ||
+    lower.includes('painting') ||
+    lower.includes('poster') ||
+    lower.includes('frame') ||
+    lower.includes('clock') ||
+    lower.includes('wallpaper')
+  ) {
+    return 'wall';
+  }
+  return 'floor';
+}
+
+/**
+ * Obtiene los límites espaciales autorizados para una capa de colocación específica.
+ */
+export function getValidBoundsForLayer(layer: PlacementLayer): Bounds {
+  return layer === 'wall' ? WALL_BOUNDS : DEFAULT_FLOOR_BOUNDS;
+}
 
 /**
  * Acota una posición (x, y) para garantizar que permanezca dentro de los límites especificados.
@@ -56,7 +96,7 @@ export function clampToBounds(
 }
 
 /**
- * Comprueba si una posición se encuentra estrictamente dentro de los límites.
+ * Comprueba si una posición se encuentra estrictamente dentro de los límites dados.
  *
  * @param position Coordenadas a verificar.
  * @param bounds Límites válidos.
@@ -77,11 +117,165 @@ export function isWithinBounds(
 }
 
 /**
+ * Comprueba si una posición es válida para la capa de colocación especificada (suelo o pared).
+ */
+export function isValidPlacementPosition(
+  position: { x: number; y: number },
+  layer: PlacementLayer = 'floor'
+): boolean {
+  return isWithinBounds(position, getValidBoundsForLayer(layer));
+}
+
+/**
+ * Valida si un ítem puede colocarse en una posición dada según su categoría espacial.
+ * Los muebles de suelo NUNCA se permiten en la pared, y las decoraciones de pared no van al suelo.
+ */
+export function canPlaceItemAt(
+  itemId: string,
+  position: { x: number; y: number }
+): boolean {
+  const layer = getItemPlacementLayer(itemId);
+  return isValidPlacementPosition(position, layer);
+}
+
+export interface RoomGridConfig {
+  readonly cols?: number;
+  readonly rows?: number;
+  readonly cellWidth?: number;
+  readonly cellHeight?: number;
+  readonly originX?: number;
+  readonly originY?: number;
+  readonly layer?: PlacementLayer;
+}
+
+/**
+ * Genera una rejilla discreta inmutable de celdas centradas para la habitación.
+ */
+export function createRoomGrid(config?: RoomGridConfig): RoomGrid {
+  const cols = config?.cols ?? 8;
+  const rows = config?.rows ?? 4;
+  const cellWidth = config?.cellWidth ?? 80;
+  const cellHeight = config?.cellHeight ?? 50;
+  const originX = config?.originX ?? 80;
+  const originY = config?.originY ?? 340;
+  const layer = config?.layer ?? 'floor';
+
+  const cells: GridCell[] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      cells.push({
+        col: c,
+        row: r,
+        x: Math.round(originX + c * cellWidth + cellWidth / 2),
+        y: Math.round(originY + r * cellHeight + cellHeight / 2),
+        layer,
+      });
+    }
+  }
+
+  return {
+    cols,
+    rows,
+    cellWidth,
+    cellHeight,
+    originX,
+    originY,
+    cells,
+    layer,
+  };
+}
+
+/** Rejilla de suelo por defecto: 8 columnas x 4 filas discretas sobre el parquet (340 a 540 Y). */
+export const DEFAULT_FLOOR_GRID: RoomGrid = createRoomGrid();
+
+/** Rejilla de pared por defecto: 6 columnas x 2 filas discretas para cuadros y ventanas (60 a 240 Y). */
+export const DEFAULT_WALL_GRID: RoomGrid = createRoomGrid({
+  cols: 6,
+  rows: 2,
+  cellWidth: 100,
+  cellHeight: 90,
+  originX: 100,
+  originY: 70,
+  layer: 'wall',
+});
+
+/**
+ * Función pura que calcula el snap magnético de una posición a la celda discreta más cercana de la rejilla.
+ *
+ * @param position Coordenadas deseadas (x, y).
+ * @param grid Configuración de la rejilla (por defecto DEFAULT_FLOOR_GRID).
+ * @returns Coordenadas centradas de la celda más próxima.
+ */
+export function snapToGrid(
+  position: { x: number; y: number },
+  grid: RoomGrid = DEFAULT_FLOOR_GRID
+): { x: number; y: number } {
+  if (
+    !Number.isFinite(position.x) ||
+    !Number.isFinite(position.y) ||
+    grid.cells.length === 0
+  ) {
+    return {
+      x: Number.isFinite(position.x) ? position.x : 0,
+      y: Number.isFinite(position.y) ? position.y : 0,
+    };
+  }
+
+  let minDistanceSq = Infinity;
+  let nearestCell = grid.cells[0];
+
+  for (const cell of grid.cells) {
+    const dx = cell.x - position.x;
+    const dy = cell.y - position.y;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < minDistanceSq) {
+      minDistanceSq = distSq;
+      nearestCell = cell;
+    }
+  }
+
+  return { x: nearestCell.x, y: nearestCell.y };
+}
+
+/**
+ * Encuentra y retorna la celda discreta más cercana a las coordenadas dadas.
+ */
+export function findNearestGridCell(
+  position: { x: number; y: number },
+  grid: RoomGrid = DEFAULT_FLOOR_GRID
+): GridCell | null {
+  if (
+    !Number.isFinite(position.x) ||
+    !Number.isFinite(position.y) ||
+    grid.cells.length === 0
+  ) {
+    return null;
+  }
+
+  let minDistanceSq = Infinity;
+  let nearestCell = grid.cells[0];
+
+  for (const cell of grid.cells) {
+    const dx = cell.x - position.x;
+    const dy = cell.y - position.y;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < minDistanceSq) {
+      minDistanceSq = distSq;
+      nearestCell = cell;
+    }
+  }
+
+  return nearestCell;
+}
+
+/**
  * Coloca un ítem o mueble en la habitación asegurando que sus coordenadas estén dentro
  * de los límites válidos. Si el ítem ya existía en la habitación, actualiza su posición.
  *
  * @param room Estado actual inmutable de la habitación.
- * @param item Mueble a colocar con sus coordenadas deseadas.
+ * @param item Mueble a colocar con sus coordenadas deseadas y capa opcional.
  * @param validBounds Límites permitidos para la colocación.
  * @returns Nueva instancia inmutable de Room con el ítem colocado.
  */
@@ -90,22 +284,22 @@ export function placeItemInRoom(
   item: PlacedItem,
   validBounds: Bounds = DEFAULT_ROOM_BOUNDS
 ): Room {
-  // Early return si el itemId es inválido
   if (!item.itemId || item.itemId.trim() === '') {
     return room;
   }
 
+  const layer = item.layer ?? getItemPlacementLayer(item.itemId);
   const clamped = clampToBounds({ x: item.x, y: item.y }, validBounds);
   const validatedItem: PlacedItem = {
     itemId: item.itemId,
     x: clamped.x,
     y: clamped.y,
+    layer,
   };
 
   const existingIndex = room.placedItems.findIndex((i) => i.itemId === item.itemId);
 
   if (existingIndex >= 0) {
-    // Si ya existe, actualiza la posición del ítem existente
     const updatedPlacedItems = room.placedItems.map((placed, idx) =>
       idx === existingIndex ? validatedItem : placed
     );
@@ -115,7 +309,6 @@ export function placeItemInRoom(
     };
   }
 
-  // Si no existe, agrega el nuevo ítem a la lista de forma inmutable
   return {
     ...room,
     placedItems: [...room.placedItems, validatedItem],
@@ -206,7 +399,6 @@ export function placeFurnitureFromInventory(
   const sourceItem = inventory.items[itemIndex];
   const newQuantity = sourceItem.quantity - 1;
 
-  // Actualizar inventario inmutablemente
   const updatedInventoryItems =
     newQuantity > 0
       ? inventory.items.map((item, idx) =>

@@ -1,9 +1,20 @@
 import { Application } from 'pixi.js';
-import type { BallGameState, PetAppearance, PetClothes, Room } from '../../domain';
+import {
+  type BallGameState,
+  type PetAppearance,
+  type PetClothes,
+  type Room,
+  getItemPlacementLayer,
+  getValidBoundsForLayer,
+  DEFAULT_FLOOR_GRID,
+  DEFAULT_WALL_GRID,
+  snapToGrid,
+} from '../../domain';
 import { PetView, isFloorPosition, clampToFloor } from '../pet';
 import { RoomView, FurnitureView } from '../room';
 import { BallGameView } from '../minigame';
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, calculateViewportScale } from '../viewport';
+import { theme } from '../../styles';
 import type { GamePointerEventType, GamePointerEvent, GamePointerEventHandler } from './types';
 
 /**
@@ -387,13 +398,35 @@ export class PixiGameEngine {
           existingView.setPosition(placedItem.x, placedItem.y);
         }
       } else {
+        const layer = getItemPlacementLayer(placedItem.itemId);
+        const bounds = getValidBoundsForLayer(layer);
+        const grid = layer === 'wall' ? DEFAULT_WALL_GRID : DEFAULT_FLOOR_GRID;
+
         const newView = new FurnitureView(
           placedItem.itemId,
           placedItem.x,
-          placedItem.y
+          placedItem.y,
+          bounds,
+          grid
         );
         newView.setDecoratingMode(this.decoratingMode);
         newView.setSelected(this.selectedFurnitureId === placedItem.itemId);
+
+        newView.setOnDragStart(() => {
+          this.roomView?.setGridVisible(true);
+        });
+
+        newView.setOnDragMove((pos) => {
+          const snapped = snapToGrid(pos, newView.currentGrid);
+          this.roomView?.highlightGridCell(snapped.x, snapped.y);
+        });
+
+        newView.setOnDragEnd(() => {
+          this.roomView?.clearGridHighlight();
+          if (!this.decoratingMode) {
+            this.roomView?.setGridVisible(false);
+          }
+        });
 
         newView.setOnMoveEnd((pos) => {
           this.furnitureMovedHandler?.(placedItem.itemId, pos);
@@ -418,15 +451,17 @@ export class PixiGameEngine {
 
   /**
    * Activa o desactiva el modo de decoración.
-   * Permite mover muebles arrastrándolos y visualizarlos con indicadores de selección.
+   * Permite mover muebles arrastrándolos y visualizarlos con indicadores de selección y guías de rejilla.
    */
   setDecoratingMode(enabled: boolean): void {
     this.decoratingMode = enabled;
+    this.roomView?.setGridVisible(enabled);
+    if (!enabled) {
+      this.roomView?.clearGridHighlight();
+      this.selectFurniture(null);
+    }
     for (const view of this.furnitureViews.values()) {
       view.setDecoratingMode(enabled);
-    }
-    if (!enabled) {
-      this.selectFurniture(null);
     }
   }
 
@@ -453,7 +488,7 @@ export class PixiGameEngine {
 
   /**
    * Redimensiona el canvas al tamaño del contenedor disponible,
-   * aplicando escalado uniforme con letterbox/pillarbox.
+   * aplicando escalado uniforme con marco diorama centrado.
    */
   resize(containerWidth: number, containerHeight: number): void {
     if (!this.app) {
@@ -469,6 +504,9 @@ export class PixiGameEngine {
     canvas.style.height = `${viewport.height}px`;
     canvas.style.marginLeft = `${viewport.offsetX}px`;
     canvas.style.marginTop = `${viewport.offsetY}px`;
+    canvas.style.boxShadow = theme.colors.dioramaShadow;
+    canvas.style.borderRadius = '8px';
+    canvas.style.display = 'block';
 
     this.currentScale = viewport.scale;
   }

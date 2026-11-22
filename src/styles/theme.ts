@@ -7,10 +7,16 @@ export const theme = {
     textMuted: '#757575',
     /** Fondo del canvas de juego (cielo azul claro) — valor hexadecimal para PixiJS. */
     gameSky: 0x87CEEB,
-    /** Fondo del contenedor que rodea el canvas (barras de letterbox/pillarbox). */
-    gameContainerBackground: '#1a1a2e',
+    /** Fondo envolvente cálido y acogedor que enmarca el escenario diorama (reemplazo de barras negras). */
+    gameContainerBackground: '#ede2d1',
+    /** Degradado radial cálido y estilizado que rodea la habitación diorama sin cortes bruscos. */
+    dioramaBackdrop: 'radial-gradient(ellipse at center, #faf4eb 0%, #ede0cf 55%, #dfceb9 100%)',
+    /** Sombra perimetral suave del escenario diorama contra el fondo envolvente. */
+    dioramaShadow: '0 16px 48px rgba(70, 45, 20, 0.22), 0 4px 16px rgba(70, 45, 20, 0.12)',
+    /** Borde sutil del marco diorama. */
+    dioramaBorder: '2px solid rgba(255, 255, 255, 0.45)',
     /** Texto del estado de carga del motor gráfico. */
-    loadingText: '#cccccc',
+    loadingText: '#7a6045',
 
     // Tokens de UI para controles interactivos
     cardBackground: '#ffffff',

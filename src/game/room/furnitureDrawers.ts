@@ -1,14 +1,32 @@
 /**
- * Dibujadores vectoriales procedimentales para los muebles de Pet Society.
+ * Dibujadores vectoriales procedimentales para los muebles y decoraciones de Pet Society.
  *
  * Cada mueble se dibuja utilizando únicamente primitivas vectoriales de PixiJS Graphics
  * (rect, roundRect, circle, ellipse, poly) sin requerir texturas externas ni imágenes ráster.
  *
- * El origen local (0, 0) de cada mueble corresponde a su punto de contacto con el suelo
+ * El origen local (0, 0) de cada mueble corresponde a su punto de anclaje de contacto
  * (centro-inferior), lo que garantiza un ordenamiento de profundidad natural (z-sorting).
+ * Las sombras de contacto en el suelo se gestionan de forma desacoplada para permitir
+ * elevación y escala reactiva durante el arrastre (R-01: SoC).
  */
 
 import { Graphics } from 'pixi.js';
+
+/**
+ * Dibuja la sombra de contacto elíptica suave en el suelo para un mueble.
+ */
+export function drawFurnitureShadow(graphics: Graphics, width = 80): void {
+  graphics.clear();
+  const radiusX = Math.round(width * 0.44);
+  const radiusY = Math.round(Math.max(6, width * 0.11));
+
+  // 1. Difuminado exterior suave
+  graphics.ellipse(0, 0, radiusX, radiusY).fill({ color: 0x2b1d0c, alpha: 0.16 });
+  // 2. Núcleo más oscuro de contacto
+  graphics
+    .ellipse(0, 0, Math.round(radiusX * 0.72), Math.round(radiusY * 0.7))
+    .fill({ color: 0x1a0f05, alpha: 0.22 });
+}
 
 /**
  * Dibuja una cama clásica de madera con sábanas suaves y almohada mullida.
@@ -16,10 +34,7 @@ import { Graphics } from 'pixi.js';
 export function drawBed(graphics: Graphics): void {
   graphics.clear();
 
-  // 1. Sombra suave de contacto en el suelo
-  graphics.ellipse(0, 0, 75, 14).fill({ color: 0x000000, alpha: 0.18 });
-
-  // 2. Cabecero trasero de madera
+  // 1. Cabecero trasero de madera
   graphics
     .roundRect(-75, -88, 150, 60, 8)
     .fill({ color: 0x8C5A2B })
@@ -32,17 +47,17 @@ export function drawBed(graphics: Graphics): void {
   graphics.circle(-74, -98, 7).fill({ color: 0xD4A373 });
   graphics.circle(74, -98, 7).fill({ color: 0xD4A373 });
 
-  // 3. Almohada mullida
+  // 2. Almohada mullida
   graphics
     .roundRect(-45, -72, 90, 26, 10)
     .fill({ color: 0xFFFFFF })
     .stroke({ color: 0xDEE2E6, width: 2 });
   graphics.roundRect(-20, -62, 40, 6, 3).fill({ color: 0xEDEDED });
 
-  // 4. Base del colchón
+  // 3. Base del colchón
   graphics.roundRect(-70, -42, 140, 36, 6).fill({ color: 0xECE4DB });
 
-  // 5. Edredón / Colcha en tono menta suave
+  // 4. Edredón / Colcha en tono menta suave
   graphics
     .roundRect(-72, -40, 144, 38, 8)
     .fill({ color: 0x90BE6D })
@@ -63,7 +78,7 @@ export function drawBed(graphics: Graphics): void {
   graphics.circle(5, -12, 3).fill({ color: 0x588157, alpha: 0.5 });
   graphics.circle(35, -10, 3).fill({ color: 0x588157, alpha: 0.5 });
 
-  // 6. Patas delanteras de apoyo
+  // 5. Patas delanteras de apoyo
   graphics.roundRect(-70, -6, 10, 8, 2).fill({ color: 0x5E3A18 });
   graphics.roundRect(60, -6, 10, 8, 2).fill({ color: 0x5E3A18 });
 }
@@ -74,21 +89,18 @@ export function drawBed(graphics: Graphics): void {
 export function drawTable(graphics: Graphics): void {
   graphics.clear();
 
-  // 1. Sombra en el suelo
-  graphics.ellipse(0, 0, 52, 14).fill({ color: 0x000000, alpha: 0.18 });
-
-  // 2. Patas traseras (tono más sombreado)
+  // 1. Patas traseras (tono más sombreado)
   graphics.roundRect(-34, -40, 7, 36, 2).fill({ color: 0x734822 });
   graphics.roundRect(27, -40, 7, 36, 2).fill({ color: 0x734822 });
 
-  // 3. Patas delanteras
+  // 2. Patas delanteras
   graphics.roundRect(-42, -34, 8, 34, 2).fill({ color: 0x8C5A2B });
   graphics.roundRect(34, -34, 8, 34, 2).fill({ color: 0x8C5A2B });
 
-  // 4. Faldón bajo la tapa de la mesa
+  // 3. Faldón bajo la tapa de la mesa
   graphics.roundRect(-42, -44, 84, 12, 3).fill({ color: 0x7A4C22 });
 
-  // 5. Tapa ovalada de madera pulida
+  // 4. Tapa ovalada de madera pulida
   graphics
     .ellipse(0, -45, 52, 18)
     .fill({ color: 0x8C5A2B })
@@ -97,7 +109,7 @@ export function drawTable(graphics: Graphics): void {
   // Reflejo de luz en la madera
   graphics.ellipse(-10, -49, 32, 8).fill({ color: 0xCFA278, alpha: 0.6 });
 
-  // 6. Centro de mesa: jarrón cerámico con flor
+  // 5. Centro de mesa: jarrón cerámico con flor
   graphics
     .roundRect(-7, -64, 14, 16, 4)
     .fill({ color: 0xFDFBF7 })
@@ -116,21 +128,18 @@ export function drawTable(graphics: Graphics): void {
 export function drawLamp(graphics: Graphics): void {
   graphics.clear();
 
-  // 1. Sombra en el suelo
-  graphics.ellipse(0, 0, 26, 8).fill({ color: 0x000000, alpha: 0.18 });
-
-  // 2. Halo de luz cálida ambiental
+  // 1. Halo de luz cálida ambiental
   graphics.circle(0, -118, 52).fill({ color: 0xFFF3B0, alpha: 0.22 });
   graphics.circle(0, -118, 32).fill({ color: 0xFFEAA7, alpha: 0.32 });
 
-  // 3. Base dorada ponderada
+  // 2. Base dorada ponderada
   graphics
     .ellipse(0, -3, 22, 6)
     .fill({ color: 0xD4AF37 })
     .stroke({ color: 0x997A15, width: 2 });
   graphics.ellipse(0, -5, 16, 4).fill({ color: 0xF0D264 });
 
-  // 4. Mástil vertical de latón
+  // 3. Mástil vertical de latón
   graphics
     .roundRect(-3, -115, 6, 110, 2)
     .fill({ color: 0xD4AF37 })
@@ -140,7 +149,7 @@ export function drawLamp(graphics: Graphics): void {
   graphics.rect(8, -108, 1.5, 16).fill({ color: 0x997A15 });
   graphics.circle(8.75, -92, 2.5).fill({ color: 0xD4AF37 });
 
-  // 5. Pantalla acampanada en tono marfil
+  // 4. Pantalla acampanada en tono marfil
   graphics
     .poly([-18, -138, 18, -138, 29, -100, -29, -100])
     .fill({ color: 0xFEFAE0 })
@@ -161,10 +170,7 @@ export function drawLamp(graphics: Graphics): void {
 export function drawPlant(graphics: Graphics): void {
   graphics.clear();
 
-  // 1. Sombra en el suelo
-  graphics.ellipse(0, 0, 26, 8).fill({ color: 0x000000, alpha: 0.18 });
-
-  // 2. Maceta de terracota
+  // 1. Maceta de terracota
   graphics
     .poly([-22, -38, 22, -38, 15, -2, -15, -2])
     .fill({ color: 0xCB6843 })
@@ -180,12 +186,12 @@ export function drawPlant(graphics: Graphics): void {
   // Tierra oscura
   graphics.ellipse(0, -43, 20, 4).fill({ color: 0x3E2723 });
 
-  // 3. Tallos verdes
+  // 2. Tallos verdes
   graphics.poly([-2, -43, -1, -62, 1, -62, 2, -43]).fill({ color: 0x2D6A4F });
   graphics.poly([-2, -43, -16, -58, -14, -60, 0, -43]).fill({ color: 0x2D6A4F });
   graphics.poly([1, -43, 16, -56, 18, -58, 2, -43]).fill({ color: 0x2D6A4F });
 
-  // 4. Hojas tropicales frondosas
+  // 3. Hojas tropicales frondosas
   // Hoja central alta
   graphics
     .ellipse(0, -72, 14, 22)
@@ -215,11 +221,84 @@ export function drawPlant(graphics: Graphics): void {
 }
 
 /**
+ * Dibuja un cuadro decorativo de pared con paisaje al óleo y marco dorado.
+ */
+export function drawPainting(graphics: Graphics): void {
+  graphics.clear();
+
+  // Marco de madera tallada con borde dorado
+  graphics
+    .roundRect(-45, -60, 90, 60, 4)
+    .fill({ color: 0x8C5A2B })
+    .stroke({ color: 0xD4AF37, width: 3 });
+
+  // Lienzo interior con paisaje
+  graphics.roundRect(-38, -53, 76, 46, 2).fill({ color: 0x90CAF9 });
+
+  // Sol y colinas en el cuadro
+  graphics.circle(-18, -40, 7).fill({ color: 0xFFE082 });
+  graphics.ellipse(10, -16, 32, 16).fill({ color: 0x81C784 });
+  graphics.ellipse(-14, -14, 26, 14).fill({ color: 0x4CAF50 });
+
+  // Cuerda colgador en la parte superior
+  graphics.poly([-12, -60, 0, -68, 12, -60]).stroke({ color: 0xD4AF37, width: 1.5 });
+  graphics.circle(0, -68, 2.5).fill({ color: 0xD4AF37 });
+}
+
+/**
+ * Dibuja un reloj de pared vintage con péndulo.
+ */
+export function drawClock(graphics: Graphics): void {
+  graphics.clear();
+
+  // Caja de madera de caoba
+  graphics
+    .roundRect(-22, -75, 44, 75, 5)
+    .fill({ color: 0x5E3A18 })
+    .stroke({ color: 0x3D230D, width: 2 });
+
+  // Esfera del reloj
+  graphics.circle(0, -50, 15).fill({ color: 0xFFFDF7 }).stroke({ color: 0xD4AF37, width: 2 });
+  // Manecillas
+  graphics.rect(-1, -50, 2, 8).fill({ color: 0x212121 });
+  graphics.rect(-1, -50, 6, 2).fill({ color: 0x212121 });
+
+  // Ventana inferior de cristal para el péndulo
+  graphics.roundRect(-14, -30, 28, 24, 3).fill({ color: 0x1A0F05 });
+  // Varilla y lenteja de péndulo dorado
+  graphics.rect(-1, -30, 2, 16).fill({ color: 0xD4AF37 });
+  graphics.circle(0, -14, 5).fill({ color: 0xF0D264 }).stroke({ color: 0x997A15, width: 1 });
+}
+
+/**
+ * Dibuja una ventana victoriana de madera para la pared.
+ */
+export function drawWallWindow(graphics: Graphics): void {
+  graphics.clear();
+
+  // Marco de madera blanca arqueado
+  graphics
+    .roundRect(-50, -120, 100, 120, 20)
+    .fill({ color: 0xFFFFFF })
+    .stroke({ color: 0xD9D0C1, width: 3 });
+
+  // Cristal con cielo
+  graphics.roundRect(-42, -112, 84, 104, 14).fill({ color: 0xA2D2FF });
+  graphics.ellipse(0, -12, 44, 22).fill({ color: 0x95D5B2 });
+
+  // Cruceta
+  graphics.rect(-2, -112, 4, 104).fill({ color: 0xFFFFFF });
+  graphics.rect(-42, -64, 84, 4).fill({ color: 0xFFFFFF });
+
+  // Repisa
+  graphics.roundRect(-58, -6, 116, 10, 3).fill({ color: 0xFFFFFF }).stroke({ color: 0xD9D0C1, width: 1.5 });
+}
+
+/**
  * Dibuja un mueble por defecto (cajón/baúl de madera) si se recibe un ID desconocido.
  */
 export function drawFallbackFurniture(graphics: Graphics): void {
   graphics.clear();
-  graphics.ellipse(0, 0, 36, 10).fill({ color: 0x000000, alpha: 0.18 });
   graphics
     .roundRect(-30, -50, 60, 50, 6)
     .fill({ color: 0xD4A373 })
@@ -231,14 +310,21 @@ export function drawFallbackFurniture(graphics: Graphics): void {
  * Despacha el dibujado vectorial adecuado según el ID del mueble.
  */
 export function drawFurnitureGraphics(graphics: Graphics, itemId: string): void {
-  if (itemId.includes('bed')) {
+  const lower = itemId.toLowerCase();
+  if (lower.includes('bed')) {
     drawBed(graphics);
-  } else if (itemId.includes('table')) {
+  } else if (lower.includes('table')) {
     drawTable(graphics);
-  } else if (itemId.includes('lamp')) {
+  } else if (lower.includes('lamp')) {
     drawLamp(graphics);
-  } else if (itemId.includes('plant')) {
+  } else if (lower.includes('plant')) {
     drawPlant(graphics);
+  } else if (lower.includes('painting')) {
+    drawPainting(graphics);
+  } else if (lower.includes('clock')) {
+    drawClock(graphics);
+  } else if (lower.includes('window')) {
+    drawWallWindow(graphics);
   } else {
     drawFallbackFurniture(graphics);
   }
