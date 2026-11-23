@@ -175,16 +175,17 @@ Leyenda de etiquetas:
   4. La mascota en el césped acompaña activamente el movimiento de la pelota con su mirada y saltitos de celebración [CUMPLIDO].
   5. `npm run verify` pasa al 100% [CUMPLIDO].
 
-#### T-UI-OVERHAUL: Rediseño Completo del HUD y Dock de Navegación Estilo Pet Society Flash
+#### T-UI-OVERHAUL: Rediseño Completo del HUD y Dock de Navegación Estilo Pet Society Flash [COMPLETADA]
 - **Dependencias:** T-ART-01, T-ART-02, T-ART-03
+- **Merge:** Commit `e4f4c74` en `main` (PR #40).
 - **Objetivo:** Reemplazar la interfaz web genérica y barras horizontales por el HUD de videojuego canónico de Pet Society (Playfish Flash): medallón superior de economía/nivel, indicadores de necesidades compactos con iconos emblemáticos, dock flotante inferior con botones circulares icónicos (Puerta/Mapa, Baúl/Inventario, Armario/Personalizador, Herramienta/Decorar, Pelota/Jardín) y diseño con relieve 3D suave, bordes oscuros y paleta pastel.
 - **Criterios de Aceptación:**
-  1. Barra horizontal web superior completamente eliminada; el lienzo del juego es el protagonista central inmersivo.
-  2. HUD superior de videojuego: cápsula/medallón con Coins (monedas doradas), Cash (billetes verdes), Nivel / Paw Points y barras de necesidades compactas con iconos vectoriales (hambre, higiene, energía, felicidad).
-  3. Dock inferior flotante con botones circulares de acción estilo Flash con iconos: 🚪 Puerta (Mapa/Tiendas), 📦 Baúl (Alimentos e Inventario), 👗 Armario (Personalizador/Vestidor), 🔨 Herramienta (Modo Decorar Habitación), ⚽ Pelota (Jardín/Minijuego).
-  4. Lenguaje visual canónico: tipografía redondeada de videojuego, bordes oscuros estilizados, relieve/volumen 3D suave y estados interactivos hover/active táctiles.
-  5. Controles de sonido integrados armoniosamente en el HUD sin aspecto de barra web.
-  6. Suite de verificación `npm run verify` pasando al 100%.
+  1. Barra horizontal web superior completamente eliminada; el lienzo del juego es el protagonista central inmersivo [CUMPLIDO].
+  2. HUD superior de videojuego: cápsula/medallón con Coins (monedas doradas), Cash (billetes verdes), Nivel / Paw Points y barras de necesidades compactas con iconos vectoriales (hambre, higiene, energía, felicidad) [CUMPLIDO].
+  3. Dock inferior flotante con botones circulares de acción estilo Flash con iconos: 🚪 Puerta (Mapa/Tiendas), 📦 Baúl (Alimentos e Inventario), 👗 Armario (Personalizador/Vestidor), 🔨 Herramienta (Modo Decorar Habitación), ⚽ Pelota (Jardín/Minijuego) [CUMPLIDO].
+  4. Lenguaje visual canónico: tipografía redondeada de videojuego, bordes oscuros estilizados, relieve/volumen 3D suave y estados interactivos hover/active táctiles [CUMPLIDO].
+  5. Controles de sonido integrados armoniosamente en el HUD sin aspecto de barra web [CUMPLIDO].
+  6. Suite de verificación `npm run verify` pasando al 100% [CUMPLIDO].
 
 ---
 

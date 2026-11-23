@@ -1,6 +1,6 @@
 # ESTADO — Pet Society
 
-Última actualización: 2026-11-19 · Manager: al día
+Última actualización: 2026-11-23 · Manager: al día
 
 ## Tareas
 
@@ -22,7 +22,7 @@
 | T-ART-01 Mascota Viva Chibi | T-ART-01 mascota-viva | t-art-01-mascota-viva | Local | #33 | Hecho | 2026-11-22 | 2026-11-22 (4cefa15) | Rediseño Flash Chibi, sombra elíptica, parpadeo, mirada al cursor y caminar por clic |
 | T-ART-02 Habitación Diorama | T-ART-02 habitacion-diorama | t-art-02-habitacion-diorama | Local | #35 | Hecho | 2026-11-22 | 2026-11-22 (dff98b4) | Perspectiva diorama 2.5D, grid snap en suelo, sombras de muebles y fin de barras negras |
 | T-ART-03 Minijuego Jugoso | T-ART-03 minijuego-jugoso | t-art-03-minijuego-jugoso | Local | #37 | Hecho | 2026-11-22 | 2026-11-22 (1a435d8) | Pelota doble tamaño estilo juguete clásico, física jugosa, sombra reactiva y saltos |
-| T-UI-OVERHAUL HUD y Dock Flash | T-UI-OVERHAUL hud-dock-flash | t-ui-overhaul-hud-dock-flash | Local | - | Por hacer | - | - | Eliminación de barra web, HUD superior cápsula, dock inferior flotante con botones circulares |
+| T-UI-OVERHAUL HUD y Dock Flash | T-UI-OVERHAUL hud-dock-flash | t-ui-overhaul-hud-dock-flash | Local | #40 | Hecho | 2026-11-23 | 2026-11-23 (e4f4c74) | Eliminación de barra web, HUD superior cápsula, dock inferior flotante con botones circulares |
 
 ## Conversaciones activas
 - Manager (fija)
